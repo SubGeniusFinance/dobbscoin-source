@@ -12,6 +12,21 @@ class CBlockHeader;
 class CBlockIndex;
 class uint256;
 
+// LWMA-3 hard-fork activation heights (DiffMode V5).
+// Mainnet: block 1,880,000 — ~6 weeks of upgrade window from 2026-05-21
+// at 2-min blocks. Pinned to a round number for legibility in ANNs.
+// Testnet/regtest: trip immediately so test infra exercises the new path.
+static const int64_t HARDFORK_LWMA3_MAIN    = 1880000;
+static const int64_t HARDFORK_LWMA3_TESTNET = 100;
+
+// Consensus-level finality: a chain that would reorganize past this many
+// already-buried blocks of the active tip is rejected outright. 100 blocks
+// * 2 min = ~3.3h. The wBOB bridge requires 288 conf (~9.6h), so the bridge
+// remains strictly more conservative than consensus — correct ordering.
+static const int MAX_REORG_DEPTH = 100;
+
+int64_t LWMA3ForkHeight();
+
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock);
 
 /** Check whether a block hash satisfies the proof-of-work requirement specified by nBits */

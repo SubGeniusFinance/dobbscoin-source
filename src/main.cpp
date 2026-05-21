@@ -2213,6 +2213,24 @@ static bool ActivateBestChainStep(CValidationState &state, CBlockIndex *pindexMo
     const CBlockIndex *pindexOldTip = chainActive.Tip();
     const CBlockIndex *pindexFork = chainActive.FindFork(pindexMostWork);
 
+    // LWMA-3 fork rule: refuse to switch to a chain that would reorganize
+    // past MAX_REORG_DEPTH already-buried blocks. Cheap half of the rented-
+    // hash defense — once a block is N deep, this node treats it as final.
+    // Active only on/after the LWMA-3 activation height, so chain history
+    // before the fork remains replayable on a fresh sync.
+    if (pindexFork != NULL && pindexOldTip != NULL &&
+        pindexOldTip->nHeight >= LWMA3ForkHeight()) {
+        int reorgDepth = pindexOldTip->nHeight - pindexFork->nHeight;
+        if (reorgDepth > MAX_REORG_DEPTH) {
+            LogPrintf("ActivateBestChainStep: refusing reorg of depth %d (max %d) at height %d\n",
+                      reorgDepth, MAX_REORG_DEPTH, pindexOldTip->nHeight);
+            return state.Invalid(
+                error("%s: reorg depth %d exceeds MAX_REORG_DEPTH %d",
+                      __func__, reorgDepth, MAX_REORG_DEPTH),
+                REJECT_OBSOLETE, "bad-reorg-depth");
+        }
+    }
+
     // Disconnect active blocks which are no longer in the best chain.
     while (chainActive.Tip() && chainActive.Tip() != pindexFork) {
         if (!DisconnectTip(state))
