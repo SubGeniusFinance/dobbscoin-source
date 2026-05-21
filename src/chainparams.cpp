@@ -156,7 +156,6 @@ public:
         assert(hashGenesisBlock == HASHGENESISBLOCK);
 
         vSeeds.push_back(CDNSSeedData("dobbscoin.info", "seed.dobbscoin.info"));
-        vSeeds.push_back(CDNSSeedData("earlz.net", "earlz.net"));
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,0);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,5);
@@ -211,9 +210,7 @@ public:
 
         vFixedSeeds.clear();
         vSeeds.clear();
-        vSeeds.push_back(CDNSSeedData("earlz.net", "earlz.net"));
         vSeeds.push_back(CDNSSeedData("testnet-seed.dobbscoin.info", "testnet-seed.dobbscoin.info"));
-        vSeeds.push_back(CDNSSeedData("dobbscoin.info", "dobbscoin.info"));
 
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,111);
