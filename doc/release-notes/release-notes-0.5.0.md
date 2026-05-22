@@ -7,7 +7,7 @@ This release include German, Spanish, Spanish-Castilian, Norwegian and Dutch tra
 https://www.transifex.net/projects/p/dobbscoin/
 
 Please report bugs using the issue tracker at github:
-https://github.com/dobbscoin/dobbscoin-source/issues
+https://github.com/SubGeniusFinance/dobbscoin-source/issues
 
 For Ubuntu users, there is a new ppa maintained by Matt Corallo which you can add to your system so that it will automatically keep dobbscoin up-to-date.  Just type "sudo apt-add-repository ppa:dobbscoin/dobbscoin" in your terminal, then install the dobbscoin-qt package.
 

@@ -4,7 +4,7 @@ Dobbscoin version 0.6.3 is now available for download at:
 This is a bug-fix release, with no new features.
 
 Please report bugs using the issue tracker at github:
-  https://github.com/dobbscoin/dobbscoin-source/issues
+  https://github.com/SubGeniusFinance/dobbscoin-source/issues
 
 CHANGE SUMMARY
 

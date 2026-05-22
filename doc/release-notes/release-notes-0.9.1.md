@@ -13,7 +13,7 @@ hostile hosts.
 
 Please report bugs using the issue tracker at github:
 
-  https://github.com/dobbscoin/dobbscoin-source/issues
+  https://github.com/SubGeniusFinance/dobbscoin-source/issues
 
 How to Upgrade
 --------------

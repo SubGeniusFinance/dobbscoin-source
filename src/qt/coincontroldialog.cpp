@@ -117,7 +117,7 @@ CoinControlDialog::CoinControlDialog(QWidget *parent) :
     connect(ui->pushButtonSelectAll, SIGNAL(clicked()), this, SLOT(buttonSelectAllClicked()));
 
     // change coin control first column label due Qt4 bug. 
-    // see https://github.com/dobbscoin/dobbscoin-source/issues/5716
+    // see https://github.com/SubGeniusFinance/dobbscoin-source/issues/5716
     ui->treeWidget->headerItem()->setText(COLUMN_CHECKBOX, QString());
 
     ui->treeWidget->setColumnWidth(COLUMN_CHECKBOX, 84);

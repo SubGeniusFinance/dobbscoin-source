@@ -5,7 +5,7 @@ This is a bugfix-only release based on 0.5.1.
 It also includes a few protocol updates.
 
 Please report bugs using the issue tracker at github:
-https://github.com/dobbscoin/dobbscoin-source/issues
+https://github.com/SubGeniusFinance/dobbscoin-source/issues
 
 Stable source code is hosted at Gitorious:
 http://gitorious.org/dobbscoin/dobbscoind-stable/archive-tarball/v0.5.3#.tar.gz

@@ -5,7 +5,7 @@ This is a major release designed to improve performance and handle the
 increasing volume of transactions on the network.
 
 Please report bugs using the issue tracker at github:
-  https://github.com/dobbscoin/dobbscoin-source/issues
+  https://github.com/SubGeniusFinance/dobbscoin-source/issues
 
 How to Upgrade
 --------------

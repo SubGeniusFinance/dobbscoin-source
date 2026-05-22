@@ -46,7 +46,7 @@ The following are developer notes on how to build Dobbscoin on your native platf
 
 Development
 ---------------------
-The Dobbscoin repo's [root README](https://github.com/dobbscoin/dobbscoin-source/blob/master/README.md) contains relevant information on the development process and automated testing.
+The Dobbscoin repo's [root README](https://github.com/SubGeniusFinance/dobbscoin-source/blob/master/README.md) contains relevant information on the development process and automated testing.
 
 - [Coding Guidelines](coding.md)
 - [Multiwallet Qt Development](multiwallet-qt.md)

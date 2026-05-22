@@ -395,7 +395,7 @@ std::string HelpMessage(HelpMessageMode mode)
 std::string LicenseInfo()
 {
     return "\n" +
-           FormatParagraph(_("Dobbscoin: Where Culture becomes Capital")) + "\n" +
+           FormatParagraph(_("Dobbscoin: Where Sub-Culture becomes Capital")) + "\n" +
            FormatParagraph(_("(BOB) Dobbscoin is the official Crypto-Currency of the Church of the SubGenius")) + "\n" +
            FormatParagraph(_("Backed By Nothing, Powered By Everything.")) + "\n" +
            "\n" +

@@ -9,13 +9,13 @@ More translations are welcome; join the project at Transifex if you can help:
 https://www.transifex.net/projects/p/dobbscoin/
 
 Please report bugs using the issue tracker at github:
-https://github.com/dobbscoin/dobbscoin-source/issues
+https://github.com/SubGeniusFinance/dobbscoin-source/issues
 
 Project source code is hosted at github; we are no longer
 distributing .tar.gz files here, you can get them
 directly from github:
-https://github.com/dobbscoin/dobbscoin-source/tarball/v0.5.1  # .tar.gz
-https://github.com/dobbscoin/dobbscoin-source/zipball/v0.5.1  # .zip
+https://github.com/SubGeniusFinance/dobbscoin-source/tarball/v0.5.1  # .tar.gz
+https://github.com/SubGeniusFinance/dobbscoin-source/zipball/v0.5.1  # .zip
 
 For Ubuntu users, there is a new ppa maintained by Matt Corallo which
 you can add to your system so that it will automatically keep

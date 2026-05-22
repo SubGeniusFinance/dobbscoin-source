@@ -5,12 +5,12 @@ We recommend that everybody running prior versions of dobbscoind/Dobbscoin-Qt
 upgrade to this release, except for users running Mac OSX 10.5.
 
 Please report bugs using the issue tracker at github:
-  https://github.com/dobbscoin/dobbscoin-source/issues
+  https://github.com/SubGeniusFinance/dobbscoin-source/issues
 
 Project source code is hosted at github; you can get
 source-only tarballs/zipballs directly from there:
-  https://github.com/dobbscoin/dobbscoin-source/tarball/v0.7.0  # .tar.gz
-  https://github.com/dobbscoin/dobbscoin-source/zipball/v0.7.0  # .zip
+  https://github.com/SubGeniusFinance/dobbscoin-source/tarball/v0.7.0  # .tar.gz
+  https://github.com/SubGeniusFinance/dobbscoin-source/zipball/v0.7.0  # .zip
 
 Ubuntu Linux users can use the "Personal Package Archive" (PPA)
 maintained by Matt Corallo to automatically keep 

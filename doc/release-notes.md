@@ -1,6 +1,6 @@
 Dobbscoin Core version 0.10.808.999 is now available from:
 
-  <https://github.com/dobbscoin/dobbscoin-source/releases>
+  <https://github.com/SubGeniusFinance/dobbscoin-source/releases>
 
 This is a Bad Ass last of the 0.10.xx series release, bringing minor bug 
 fixes and all kinds of bitching updates. If you care about that stuff go
@@ -58,7 +58,7 @@ No operational changes are required.
 
 Please report bugs using the issue tracker at github:
 
-  <https://github.com/dobbscoin/dobbscoin-source/issues>
+  <https://github.com/SubGeniusFinance/dobbscoin-source/issues>
 
 
 Dobbscoin Core Release Notes
@@ -225,12 +225,12 @@ Notable changes
 ===============
 
 This fixes a serious problem on Windows with data directories that have non-ASCII
-characters (https://github.com/dobbscoin/dobbscoin-source/issues/6078).
+characters (https://github.com/SubGeniusFinance/dobbscoin-source/issues/6078).
 
 For other platforms there are no notable changes.
 
 For the notable changes in 0.10, refer to the release notes
-at https://github.com/dobbscoin/dobbscoin-source/blob/v0.10.0/doc/release-notes.md
+at https://github.com/SubGeniusFinance/dobbscoin-source/blob/v0.10.0/doc/release-notes.md
 
 
 We Believe:

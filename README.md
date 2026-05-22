@@ -16,7 +16,7 @@ Whatever your problem is, Dobbscoin can help you.
 Will you join The Conspiracy's mindless atheistic unknowing servitude to the Elder Bankers of the Universe and their MINIONS in some hideous World Government, ..or will you GET SLACK and FIGHT FOR FREEDOM as a zeal-crazed Priest-Warrior for ODIN?
 
 •  SubGenius Finance : https://SubGenius.Finance 
-Where Culture Becomes Capital
+Where Sub-Culture becomes Capital
 
 Eternal Salvation or Triple your Money Back!!
 
@@ -30,7 +30,7 @@ Slack is carried out collectively by the network.
 
 For more information, as well as an immediately useable binary version of
 the Dobbscoin Core software, see:
-https://github.com/dobbscoin/dobbscoin-source/releases
+https://github.com/SubGeniusFinance/dobbscoin-source/releases
 
 
 Building Dobbscoin on Linux
@@ -40,7 +40,7 @@ and Debian using standard system libraries.
 
 Most users can build Dobbscoin with the following commands:
 
-    git clone https://github.com/dobbscoin/dobbscoin-source.git
+    git clone https://github.com/SubGeniusFinance/dobbscoin-source.git
     cd dobbscoin-source
 
     ./autogen.sh

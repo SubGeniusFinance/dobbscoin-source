@@ -3,7 +3,7 @@ Upstream-Name: Dobbscoin
 Upstream-Contact: Satoshi Nakamoto <satoshin@gmx.com>
  irc://#dobbscoin@freenode.net
 Source: http://sourceforge.net/projects/dobbscoin/files/
- https://github.com/dobbscoin/dobbscoin-source
+ https://github.com/SubGeniusFinance/dobbscoin-source
 
 Files: *
 Copyright: 2009-2012, Dobbscoin Core Developers

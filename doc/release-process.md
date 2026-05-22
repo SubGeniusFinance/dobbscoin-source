@@ -2,7 +2,7 @@ Release Process
 ====================
 
 * update translations (ping wumpus, Diapolo or tcatm on IRC)
-* see https://github.com/dobbscoin/dobbscoin-source/blob/master/doc/translation_process.md#syncing-with-transifex
+* see https://github.com/SubGeniusFinance/dobbscoin-source/blob/master/doc/translation_process.md#syncing-with-transifex
 
 * * *
 
@@ -137,14 +137,14 @@ rm SHA256SUMS
 - Update dobbscoin.org version
 
   - First, check to see if the Dobbscoin.org maintainers have prepared a
-    release: https://github.com/dobbscoin/dobbscoin-source.org/labels/Releases
+    release: https://github.com/SubGeniusFinance/dobbscoin-source.org/labels/Releases
 
       - If they have, it will have previously failed their Travis CI
         checks because the final release files weren't uploaded.
         Trigger a Travis CI rebuild---if it passes, merge.
 
   - If they have not prepared a release, follow the Dobbscoin.org release
-    instructions: https://github.com/dobbscoin/dobbscoin-source.org#release-notes
+    instructions: https://github.com/SubGeniusFinance/dobbscoin-source.org#release-notes
 
   - After the pull request is merged, the website will automatically show the newest version within 15 minutes, as well
     as update the OS download links. Ping @saivann/@harding (saivann/harding on Freenode) in case anything goes wrong

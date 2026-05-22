@@ -4,7 +4,7 @@ Dobbscoin version 0.7.2 is now available from:
 This is a bug-fix minor release.
 
 Please report bugs using the issue tracker at github:
-  https://github.com/dobbscoin/dobbscoin-source/issues
+  https://github.com/SubGeniusFinance/dobbscoin-source/issues
 
 How to Upgrade
 --------------

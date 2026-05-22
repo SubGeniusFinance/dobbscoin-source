@@ -281,7 +281,7 @@ Clone the git repositories for dobbscoin and gitian and then checkout the dobbsc
 
 ```bash
 git clone https://github.com/devrandom/gitian-builder.git
-git clone https://github.com/dobbscoin/dobbscoin-source
+git clone https://github.com/SubGeniusFinance/dobbscoin-source
 cd dobbscoin
 git checkout v${VERSION}
 cd ..
@@ -337,7 +337,7 @@ Output from `gbuild` will look something like
     remote: Total 35606 (delta 0), reused 0 (delta 0)
     Receiving objects: 100% (35606/35606), 26.52 MiB | 4.28 MiB/s, done.
     Resolving deltas: 100% (25724/25724), done.
-    From https://github.com/dobbscoin/dobbscoin-source
+    From https://github.com/SubGeniusFinance/dobbscoin-source
     ... (new tags, new branch etc)
     --- Building for precise x86_64 ---
     Stopping target if it is up
