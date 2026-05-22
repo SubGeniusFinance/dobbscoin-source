@@ -558,6 +558,82 @@ unsigned int GetNextWorkRequired_V4(const CBlockIndex* pindexLast, const CBlockH
     return bnNew.GetCompact();
 }
 
+// LWMA-3 (Zawy) — per-block weighted moving average retarget.
+// Designed for low-hash PoW chains under NiceHash-rented attacks: most-recent
+// block gets the highest weight, so difficulty tracks bursts of borrowed hash
+// down within ~N blocks of the renter leaving instead of the multi-hour lag
+// DigiShield exhibits on a 2-min target.
+//
+// Math invariants (justify the uint256 ordering below — non-obvious):
+//   sumTarget   = Σ_{i=1..N} target_i / (N · k)     keeps each term ≤ ~2^212
+//   weightedTime= Σ_{i=1..N} solvetime_i · i        bounded by 6T·N·(N+1)/2
+//   nextTarget  = sumTarget · weightedTime          ≤ ~2^240  (safe in uint256)
+// When solvetimes average exactly T, weightedTime == k and nextTarget collapses
+// to the running average of recent targets — i.e. difficulty holds steady.
+unsigned int GetNextWorkRequired_LWMA3(const CBlockIndex* pindexLast, const CBlockHeader *pblock)
+{
+    enum { N = 60 };                                   // LWMA window (blocks)
+    const int64_t T = 2 * 60;                          // target spacing (s)
+    const int64_t k = (int64_t(N) * (N + 1) * T) / 2;  // expected Σ(i·T)
+    const uint256 powLimit = Params().ProofOfWorkLimit();
+
+    if (pindexLast == NULL)
+        return powLimit.GetCompact();
+
+    // Bootstrap window: until N blocks past the fork height we don't have
+    // enough LWMA history, so re-use the previous block's bits. This means
+    // the first N post-fork blocks inherit DigiShield's last value, then
+    // LWMA-3 takes over cleanly.
+    if (pindexLast->nHeight + 1 < LWMA3ForkHeight() + N)
+        return pindexLast->nBits;
+
+    // Walk back N+1 indices (we need N solvetimes).
+    const CBlockIndex *blocks[N + 1];
+    blocks[N] = pindexLast;
+    for (int i = N - 1; i >= 0; --i)
+        blocks[i] = blocks[i + 1]->pprev;
+
+    uint256 sumTarget;
+    int64_t weightedTime = 0;
+    int64_t previousTime = blocks[0]->GetBlockTime();
+
+    for (int64_t i = 1; i <= N; ++i) {
+        int64_t thisTime = blocks[i]->GetBlockTime();
+        int64_t solvetime = thisTime - previousTime;
+        // Clamp solvetimes to [-6T, +6T] so a single bogus timestamp can't
+        // dominate the average. Negative is allowed (timestamps can move
+        // backward up to MTP) but capped symmetrically.
+        if (solvetime >  6 * T) solvetime =  6 * T;
+        if (solvetime < -6 * T) solvetime = -6 * T;
+        previousTime = thisTime;
+
+        weightedTime += solvetime * i;                 // weight = position i
+
+        uint256 target;
+        target.SetCompact(blocks[i]->nBits);
+        sumTarget += target / (uint64_t)(N * k);       // divide-before-add
+    }
+
+    // Floor the weighted sum at k/3 so an extreme inbound burst can't push
+    // next-target below ~1/3 of average (i.e. diff can at most ~3× per cycle).
+    if (weightedTime < k / 3) weightedTime = k / 3;
+
+    uint256 nextTarget = sumTarget * (uint64_t)weightedTime;
+    if (nextTarget > powLimit) nextTarget = powLimit;
+
+    LogPrintf("GetNextWorkRequired LWMA3 RETARGET  N=%d T=%d weightedTime=%d k=%d\n",
+              (int)N, (int)T, (int)weightedTime, (int)k);
+    LogPrintf("Before: %08x\n", pindexLast->nBits);
+    LogPrintf("After:  %08x  %s\n", nextTarget.GetCompact(), nextTarget.ToString());
+    return nextTarget.GetCompact();
+}
+
+int64_t LWMA3ForkHeight()
+{
+    return Params().AllowMinDifficultyBlocks() ? HARDFORK_LWMA3_TESTNET
+                                               : HARDFORK_LWMA3_MAIN;
+}
+
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock)
 {
     int DiffMode = 1;
@@ -565,17 +641,20 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
         if (pindexLast->nHeight+1 >= 20) { DiffMode = 2; }
         if (pindexLast->nHeight+1 >= 50) { DiffMode = 3; }
         if(pindexLast->nHeight+1 >= 200) { DiffMode = 4; }
+        if(pindexLast->nHeight+1 >= HARDFORK_LWMA3_TESTNET) { DiffMode = 5; }
     }
-    else 
+    else
     {
         if (pindexLast->nHeight+1 >= 13579) { DiffMode = 2; } // KGW @ Block 13579
         if(pindexLast->nHeight+1 >= 31597) { DiffMode = 3; } //switch to dobbshield @ block 31597
         if(pindexLast->nHeight+1 >= 68425) {DiffMode = 4; } //switch to 2 minute blocks with dobbshield
+        if(pindexLast->nHeight+1 >= HARDFORK_LWMA3_MAIN) { DiffMode = 5; } // LWMA-3 + max-reorg fork
     }
     if      (DiffMode == 1) { return GetNextWorkRequired_V1(pindexLast, pblock); }
     else if (DiffMode == 2) { return GetNextWorkRequired_V2(pindexLast, pblock); }
     else if (DiffMode == 3) { return GetNextWorkRequired_V3(pindexLast, pblock); }
     else if (DiffMode == 4) { return GetNextWorkRequired_V4(pindexLast, pblock); }
+    else if (DiffMode == 5) { return GetNextWorkRequired_LWMA3(pindexLast, pblock); }
     return GetNextWorkRequired_V3(pindexLast, pblock); //never reached..
 }
 
