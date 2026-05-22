@@ -27,7 +27,10 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/thread/exceptions.hpp>
 #include <boost/bind/bind.hpp>
+#include <boost/version.hpp>
+#if BOOST_VERSION >= 106000
 using namespace boost::placeholders;
+#endif
 
 extern std::map<std::string, std::string> mapArgs;
 extern std::map<std::string, std::vector<std::string> > mapMultiArgs;

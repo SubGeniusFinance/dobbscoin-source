@@ -28,7 +28,10 @@
 
 using namespace boost;
 using namespace boost::asio;
+#include <boost/version.hpp>
+#if BOOST_VERSION >= 106000
 using namespace boost::placeholders;
+#endif
 using namespace json_spirit;
 using namespace std;
 

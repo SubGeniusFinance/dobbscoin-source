@@ -21,7 +21,10 @@
 #include <QPainter>
 #include <boost/bind/bind.hpp>
 
+#include <boost/version.hpp>
+#if BOOST_VERSION >= 106000
 using namespace boost::placeholders;
+#endif
 
 SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle *networkStyle) :
     QWidget(0, f), curAlignment(0)

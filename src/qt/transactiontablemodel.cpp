@@ -25,7 +25,10 @@
 #include <QList>
 #include <boost/bind/bind.hpp>
 
+#include <boost/version.hpp>
+#if BOOST_VERSION >= 106000
 using namespace boost::placeholders;
+#endif
 
 // Amount column is right-aligned it contains numbers
 static int column_alignments[] = {

@@ -15,7 +15,9 @@
 #include <boost/function.hpp>
 #include <boost/version.hpp>
 
+#if BOOST_VERSION >= 106000
 using namespace boost::placeholders;
+#endif
 
 #if BOOST_VERSION >= 103800
     #include <boost/spirit/include/classic_core.hpp>

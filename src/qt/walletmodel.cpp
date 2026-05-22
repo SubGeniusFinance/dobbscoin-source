@@ -26,7 +26,10 @@
 #include <QTimer>
 
 using namespace std;
+#include <boost/version.hpp>
+#if BOOST_VERSION >= 106000
 using namespace boost::placeholders;
+#endif
 
 WalletModel::WalletModel(CWallet *wallet, OptionsModel *optionsModel, QObject *parent) :
     QObject(parent), wallet(wallet), optionsModel(optionsModel), addressTableModel(0),

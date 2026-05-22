@@ -30,7 +30,10 @@
 #include "util.h"
 
 #include <boost/bind/bind.hpp>
+#include <boost/version.hpp>
+#if BOOST_VERSION >= 106000
 using namespace boost::placeholders;
+#endif
 
 #include <iostream>
 
