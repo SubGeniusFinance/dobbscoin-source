@@ -13,10 +13,11 @@ class CBlockIndex;
 class uint256;
 
 // LWMA-3 hard-fork activation heights (DiffMode V5).
-// Mainnet: block 1,880,000 — ~6 weeks of upgrade window from 2026-05-21
-// at 2-min blocks. Pinned to a round number for legibility in ANNs.
+// Mainnet: block 1,888,808 — ~54-day upgrade window from 2026-05-22 at
+// 2-min target spacing (~2026-07-16). The 808 suffix is intentional
+// SubGenius-friendly vanity; the height is a future block, not a date.
 // Testnet/regtest: trip immediately so test infra exercises the new path.
-static const int64_t HARDFORK_LWMA3_MAIN    = 1880000;
+static const int64_t HARDFORK_LWMA3_MAIN    = 1888808;
 static const int64_t HARDFORK_LWMA3_TESTNET = 100;
 
 // Consensus-level finality: a chain that would reorganize past this many
