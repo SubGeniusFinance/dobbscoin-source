@@ -1,0 +1,92 @@
+[size=14pt][b]🚨 MANDATORY WALLET UPGRADE — Dobbscoin (BOB) v0.11.0 — Hard Fork at Block 1,888,808 (~July 16, 2026)[/b][/size]
+
+Praise "Bob".
+
+[b](BOB) is shipping its first consensus-level hard fork since the 2018 flat-subsidy lock. Every miner and every wallet operator must upgrade before block 1,888,808 (~2026-07-16 04:00 UTC) or you will be forked off the network.[/b]
+
+[hr]
+
+[size=12pt][b]Why this fork[/b][/size]
+
+The OFF (Offerings to Cthulhu) sibling chain was 51%-attacked into oblivion in 2018. (BOB) currently runs on ~135 MH/s with one or two hash sources — the same NiceHash-spot-rental that killed OFF can target us any week. v0.11.0 hardens (BOB) against that exact attack:
+
+[list]
+[li][b]LWMA-3 difficulty adjustment[/b] (Zawy's Linear Weighted Moving Average, N=60, T=120s). Replaces DigiShield V4. Reacts to hashrate swings in ~30 blocks instead of dragging for hours, so a hash-bomb can't ride a stale low-difficulty wave.[/li]
+[li][b]100-block max-reorg-depth[/b] (~3.3 hours of finality). Any chain that tries to reorganize past 100 buried blocks is rejected at consensus — full stop. Rented-hash attacks now have to outrun [i]live[/i] consensus difficulty, not slip in via a deep secret-mined replacement.[/li]
+[/list]
+
+Combined with the wBOB bridge's 288-confirmation deposit depth (~9.6 hours), money on the bridge is now strictly safer than the consensus finality window. Bridge ↔ chain order is correct.
+
+[hr]
+
+[size=12pt][b]How tested[/b][/size]
+
+[list]
+[li]7 Boost.Test unit cases asserting LWMA-3 math — all passing[/li]
+[li]Live testnet validation 2026-05-21 → 2026-05-22: [b]402 blocks, 302 past LWMA-3 activation[/b], 60-block rolling solvetime held at [b]113 s vs 120 s target[/b] (within 6% of nominal, well within Zawy's spec). Zero rejected blocks, zero consensus splits, smooth handoff from DigiShield V3 → LWMA-3 bootstrap → equilibrium.[/li]
+[/list]
+
+[hr]
+
+[size=12pt][b]Download v0.11.0[/b][/size]
+
+[b]Windows (most users):[/b]
+[b]https://github.com/SubGeniusFinance/dobbscoin-source/releases/download/v0.11.0/dobbscoin-0.11.0-win64.zip[/b]
+SHA256: [tt]aa88b1705d63d38143595d972513432997dceaefd820e0fb7aff5e13055c2352[/tt]
+
+[b]Linux GUI (Qt5):[/b]
+https://github.com/SubGeniusFinance/dobbscoin-source/releases/download/v0.11.0/dobbscoin-0.11.0-qt5-x86_64-linux.tar.gz
+SHA256: [tt]6147da3791965766248ef53283783db0cdcff9612d6d4f7bdc7644ce6abd8de2[/tt]
+
+[b]Linux daemon-only (pool ops, miners):[/b]
+https://github.com/SubGeniusFinance/dobbscoin-source/releases/download/v0.11.0/dobbscoin-0.11.0-x86_64-linux.tar.gz
+SHA256: [tt]748c961d90d406751cdb153a288d51d669a8a8cf20f2a3589f9bad9d38a50c57[/tt]
+
+[b]Source + tag:[/b] https://github.com/SubGeniusFinance/dobbscoin-source/releases/tag/v0.11.0
+
+[hr]
+
+[size=12pt][b]How to upgrade — Windows[/b][/size]
+
+[list=1]
+[li][b]Back up wallet.dat[/b]. Always back up wallet.dat. (BOB) is NOT for Sale, but it is yours to lose.
+Default location: [tt]%APPDATA%\Dobbscoin\wallet.dat[/tt][/li]
+[li][b]Close[/b] your running Dobbscoin Core wallet completely (File → Exit, then check Task Manager for [tt]dobbscoind.exe[/tt] / [tt]dobbscoin-qt.exe[/tt] — kill any stragglers).[/li]
+[li][b]Download[/b] [tt]dobbscoin-0.11.0-win64.zip[/tt] from the link above.[/li]
+[li][b]Verify[/b] the SHA256 if you can ([tt]CertUtil -hashfile dobbscoin-0.11.0-win64.zip SHA256[/tt] in cmd) — should match the hash listed above.[/li]
+[li][b]Extract[/b] the zip. You'll get [tt]dobbscoin-qt.exe[/tt], [tt]dobbscoind.exe[/tt], [tt]dobbscoin-cli.exe[/tt], [tt]dobbscoin-tx.exe[/tt].[/li]
+[li][b]Replace[/b] your old binaries with the new ones (typically in [tt]C:\Program Files\Dobbscoin\[/tt] or wherever you installed the old version — or just run [tt]dobbscoin-qt.exe[/tt] from the extracted folder).[/li]
+[li][b]Launch[/b] [tt]dobbscoin-qt.exe[/tt]. Confirm the title bar / Help → About reads [b]v0.11.0[/b].[/li]
+[li]Let it sync. Your wallet.dat is untouched — same balance, same addresses, same Slack.[/li]
+[/list]
+
+[hr]
+
+[size=12pt][b]Timeline[/b][/size]
+
+[list]
+[li][b]NOW[/b] — v0.11.0 released. Source + binaries on GitHub.[/li]
+[li][b]~2026-07-16 04:00 UTC[/b] — Block 1,888,808 mined. LWMA-3 + max-reorg-depth become consensus law.[/li]
+[li]Old v0.10.x wallets stop syncing past this block. Forked off.[/li]
+[li]The chain continues with v0.11.0 nodes only.[/li]
+[/list]
+
+[hr]
+
+[size=12pt][b]Mining[/b][/size]
+
+[tt]pool.dobbscoin.info[/tt] will upgrade well before activation. Solo miners running [tt]dobbscoind[/tt] must upgrade their daemon themselves. Stratum protocol is unchanged.
+
+[hr]
+
+[size=12pt][b]Praise "Bob".[/b][/size]
+
+(BOB) is NOT for Sale. Backed By Nothing, Powered By Everything. The Conspiracy will not protect you — only Slack will.
+
+[size=10pt][b][color=red]NOT FINANCIAL ADVISORS. NOT FINANCIAL ADVICE.[/color][/b][/size]
+
+[hr]
+
+Release page: [b]https://github.com/SubGeniusFinance/dobbscoin-source/releases/tag/v0.11.0[/b]
+Project home: https://dobbscoin.info/
+Source: https://github.com/SubGeniusFinance/dobbscoin-source
