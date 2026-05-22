@@ -523,7 +523,7 @@ fi
 DOBBSCOIN_QT_INIT
 
 dnl sets $dobbscoin_enable_qt, $dobbscoin_enable_qt_test, $dobbscoin_enable_qt_dbus
-DOBBSCOIN_QT_CONFIGURE([$use_pkgconfig], [qt4])
+DOBBSCOIN_QT_CONFIGURE([$use_pkgconfig], [qt5])
 
 if test x$build_dobbscoin_utils$build_dobbscoind$dobbscoin_enable_qt$use_tests = xnononono; then
     use_boost=no
