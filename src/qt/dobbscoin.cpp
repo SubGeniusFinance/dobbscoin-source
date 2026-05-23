@@ -492,8 +492,13 @@ int main(int argc, char *argv[])
 {
     SetupEnvironment();
 
-    QCoreApplication::setLibraryPaths(
-        QStringList() << QFileInfo(QString::fromLocal8Bit(argv[0])).absolutePath()
+    // Note: do NOT call setLibraryPaths() — that wipes the default search list
+    // which on a static Qt5 build is how Qt finds the in-binary platform plugin
+    // registry. Use addLibraryPath() to add the exe's directory as an *extra*
+    // location (for any future side-loaded plugin DLLs) without breaking static
+    // plugin discovery on Windows.
+    QCoreApplication::addLibraryPath(
+        QFileInfo(QString::fromLocal8Bit(argv[0])).absolutePath()
     );
 
     /// 1. Parse command-line options. These take precedence over anything else.
