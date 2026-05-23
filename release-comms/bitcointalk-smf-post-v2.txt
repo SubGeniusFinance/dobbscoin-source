@@ -1,0 +1,114 @@
+[size=14pt][b]🚨 PRAISE "BOB" — MANDATORY UPGRADE — Dobbscoin (BOB) v0.11.0 — The Hardfork of Eternal Slack — Block 1,888,808 (~July 16, 2026)[/b][/size]
+
+The Conspiracy got greedy.
+
+They watched OFF (Offerings to Cthulhu) die under a 51% attack in 2018 and figured (BOB) was next on the menu. They figured wrong. The Church of the SubGenius now has the rope and the lathe both, and we are SHIPPING Pinkboy repellent at the consensus layer.
+
+[size=12pt][b]"Bob"'s Wormh0le, Now With Asymmetric Weighting[/b][/size]
+
+[b]v0.11.0 hardforks (BOB) at block 1,888,808 — ~2026-07-16 04:19 UTC — for two new consensus rules:[/b]
+
+[list]
+[li][b]LWMA-3 difficulty algorithm[/b] (Zawy's Linear Weighted Moving Average, N=60, T=120s). DigiShield V4 served the chain for years and we are not bashing it. But LWMA-3 reacts in ~30 blocks where DigiShield drags for hours — meaning the hash-bomb a Mediocretin rents off NiceHash to short-stamp a chain can't ride a stale low-difficulty wave anymore. Slack defends itself.[/li]
+[li][b]100-block max-reorg-depth.[/b] Any chain that tries to reorganize past 100 buried blocks gets [b]rejected at consensus[/b]. Full stop. The Glorps' favourite trick — secret-mining a fork in the dark, then revealing it after the (BOB) is laundered through a "buy" — is now mathematically forbidden. ~3.3 hours of finality, hardcoded.[/li]
+[/list]
+
+[size=12pt][b]Belt + Suspenders With The wBOB Bridge[/b][/size]
+
+The wBOB Bridge already requires 288 confirmations (~9.6 hours) before crediting deposits. With max-reorg-depth at 100 blocks (~3.3 hours), [b]the bridge is now strictly more conservative than consensus itself.[/b] Anything that clears the bridge cannot be unbuilt by any reorg the chain will accept. Pinkboys foiled. Praise "Bob".
+
+[size=12pt][b]How Tested[/b][/size]
+
+[list]
+[li]7 Boost.Test unit cases assert the LWMA-3 math directly. All pass.[/li]
+[li][b]Live testnet run, 2026-05-21 → 2026-05-22.[/b] 402 blocks total. 302 of them past LWMA-3 activation. The rolling 60-block average solvetime came in at [b]113 seconds vs the 120-second target — inside ±6%, well inside Zawy's spec.[/b] Zero rejected blocks. Zero consensus splits. Clean handoff from DigiShield → LWMA-3 bootstrap → equilibrium. The Slumbering Squid himself could not have asked for more.[/li]
+[/list]
+
+[hr]
+
+[size=12pt][b]Download v0.11.0 — Choose Your Weapon[/b][/size]
+
+[b]Windows (most Pinkboys):[/b]
+[b]https://github.com/SubGeniusFinance/dobbscoin-source/releases/download/v0.11.0/dobbscoin-0.11.0-win64.zip[/b]
+SHA256: [tt]f7eb48b39871e7cbf5573d52a740e7700c6f35f02e4434e159c2f9bf3e146dfa[/tt]
+
+[b]Linux self-contained AppImage (one file, no install, runs on any modern distro):[/b]
+[b]https://github.com/SubGeniusFinance/dobbscoin-source/releases/download/v0.11.0/dobbscoin-0.11.0-x86_64.AppImage[/b]
+SHA256: [tt]fa5cf66edfd8e505c301eadbd6fdfd6bdd0f0290e3302cc4c31142ee986baaba[/tt]
+
+[b]Linux dynamic GUI (smaller, requires system Qt5):[/b]
+https://github.com/SubGeniusFinance/dobbscoin-source/releases/download/v0.11.0/dobbscoin-0.11.0-qt5-x86_64-linux.tar.gz
+SHA256: [tt]6147da3791965766248ef53283783db0cdcff9612d6d4f7bdc7644ce6abd8de2[/tt]
+
+[b]Linux daemon-only (pool ops, miners, headless boxes):[/b]
+https://github.com/SubGeniusFinance/dobbscoin-source/releases/download/v0.11.0/dobbscoin-0.11.0-x86_64-linux.tar.gz
+SHA256: [tt]748c961d90d406751cdb153a288d51d669a8a8cf20f2a3589f9bad9d38a50c57[/tt]
+
+[b]Source + tag + checksums:[/b] https://github.com/SubGeniusFinance/dobbscoin-source/releases/tag/v0.11.0
+
+[hr]
+
+[size=12pt][b]How To Upgrade — Windows[/b][/size]
+
+[list=1]
+[li][b]Back up wallet.dat.[/b] (BOB) is NOT for Sale, but it is yours to lose. Default Windows location: [tt]%APPDATA%\Dobbscoin\wallet.dat[/tt] — copy it somewhere safe before you touch anything.[/li]
+[li][b]Close[/b] your running wallet completely. File → Exit. Then open Task Manager and confirm there are no zombie [tt]dobbscoind.exe[/tt] or [tt]dobbscoin-qt.exe[/tt] processes still wandering around. Pinkboys love to forget this step.[/li]
+[li][b]Download[/b] [tt]dobbscoin-0.11.0-win64.zip[/tt] from the link above.[/li]
+[li][b]Verify[/b] the SHA256 if you have any Slack to spare. Open cmd: [tt]CertUtil -hashfile dobbscoin-0.11.0-win64.zip SHA256[/tt]. It should match. If it doesn't, you got something other than what we shipped — back away.[/li]
+[li][b]Extract[/b] the zip. You'll find [tt]dobbscoin-qt.exe[/tt], [tt]dobbscoind.exe[/tt], [tt]dobbscoin-cli.exe[/tt], [tt]dobbscoin-tx.exe[/tt] inside.[/li]
+[li][b]Replace[/b] the old binaries with the new ones (typically in [tt]C:\Program Files\Dobbscoin\[/tt]) or just run [tt]dobbscoin-qt.exe[/tt] straight from the extracted folder. SmartScreen will warn you — click "More info" → "Run anyway". The Conspiracy code-signs nothing; we keep our Slack.[/li]
+[li][b]Launch[/b] [tt]dobbscoin-qt.exe[/tt]. Confirm via Help → About that it reads [b]v0.11.0[/b].[/li]
+[li]Let it sync. Your wallet.dat, balances, addresses, history — all untouched. Same Slack, new firmament.[/li]
+[/list]
+
+[size=12pt][b]How To Upgrade — Linux (Easy Mode)[/b][/size]
+
+[code]wget https://github.com/SubGeniusFinance/dobbscoin-source/releases/download/v0.11.0/dobbscoin-0.11.0-x86_64.AppImage
+chmod +x dobbscoin-0.11.0-x86_64.AppImage
+./dobbscoin-0.11.0-x86_64.AppImage[/code]
+
+One file. No dependencies. No [tt]apt install[/tt]. The AppImage carries its own Qt5 around like a self-respecting prophet.
+
+[hr]
+
+[size=12pt][b]Timeline[/b][/size]
+
+[list]
+[li][b]NOW[/b] — v0.11.0 is on the table. Praise "Bob".[/li]
+[li][b]~July 16, 2026, 04:19 UTC[/b] — Block 1,888,808 is mined. LWMA-3 becomes consensus law. The 100-block max-reorg-depth becomes consensus law. The Pinkboy-rental-attack window slams shut.[/li]
+[li][b]Old v0.10.x wallets[/b] stop syncing past this block. They will sit on a dead chain, alone with the Conspiracy, wondering where everyone went. Don't be that guy. Upgrade.[/li]
+[li]The chain continues with v0.11.0 nodes only. Slack is preserved.[/li]
+[/list]
+
+[hr]
+
+[size=12pt][b]Mining[/b][/size]
+
+[tt]pool.dobbscoin.info[/tt] will upgrade well before activation. The stratum protocol is unchanged — your miner config does not need to change at all. If you solo-mine via [tt]dobbscoind[/tt], you upgrade [tt]dobbscoind[/tt] yourself. Same as it ever was.
+
+[hr]
+
+[size=12pt][b]What Does NOT Change[/b][/size]
+
+[list]
+[li]Subsidy: still 1.5 (BOB)/block forever. No halving curve adjustment. Inflation arithmetic is the same as it was yesterday.[/li]
+[li]Address format. RPC dialect. P2P protocol. Wallet.dat format.[/li]
+[li]The "21 million" myth remains debunked. [tt]MAX_MONEY[/tt] is still a 10B sanity ceiling, not a supply cap. (BOB) was never deflationary and never will be. We are not Bitcoin. We are [b]MONETIZED SLACK[/b].[/li]
+[/list]
+
+[hr]
+
+[size=12pt][b]Praise "Bob".[/b][/size]
+
+(BOB) is NOT for Sale. Backed By Nothing, Powered By Everything. ETERNAL SALVATION OR TRIPLE YOUR MONEY BACK.
+
+The Conspiracy will not protect you. Only Slack will. Only "Bob" will.
+
+[size=10pt][b][color=red]NOT FINANCIAL ADVISORS. NOT FINANCIAL ADVICE.[/color][/b][/size]
+
+[hr]
+
+Release page: [b]https://github.com/SubGeniusFinance/dobbscoin-source/releases/tag/v0.11.0[/b]
+Project home: https://dobbscoin.info/
+Source: https://github.com/SubGeniusFinance/dobbscoin-source
+The Bridge: https://bridge.subgenius.finance/
