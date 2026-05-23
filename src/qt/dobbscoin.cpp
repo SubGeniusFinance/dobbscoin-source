@@ -50,7 +50,7 @@
 #include <QTimer>
 #include <QTranslator>
 
-#if defined(QT_STATICPLUGIN)
+#if defined(QT_STATICPLUGIN) || defined(QT_STATIC)
 #include <QtPlugin>
 #if QT_VERSION < 0x050000
 Q_IMPORT_PLUGIN(qcncodecs)
