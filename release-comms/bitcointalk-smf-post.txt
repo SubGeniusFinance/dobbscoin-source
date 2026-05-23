@@ -32,7 +32,7 @@ Combined with the wBOB bridge's 288-confirmation deposit depth (~9.6 hours), mon
 
 [b]Windows (most users):[/b]
 [b]https://github.com/SubGeniusFinance/dobbscoin-source/releases/download/v0.11.0/dobbscoin-0.11.0-win64.zip[/b]
-SHA256: [tt]aa88b1705d63d38143595d972513432997dceaefd820e0fb7aff5e13055c2352[/tt]
+SHA256: [tt]3ed63a032ce7f468866f2397b037177bdb54be6d08b62c3840d188415155bc95[/tt]
 
 [b]Linux GUI (Qt5):[/b]
 https://github.com/SubGeniusFinance/dobbscoin-source/releases/download/v0.11.0/dobbscoin-0.11.0-qt5-x86_64-linux.tar.gz
