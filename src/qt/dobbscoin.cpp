@@ -59,7 +59,12 @@ Q_IMPORT_PLUGIN(qtwcodecs)
 Q_IMPORT_PLUGIN(qkrcodecs)
 Q_IMPORT_PLUGIN(qtaccessiblewidgets)
 #else
+// AccessibleFactory was a separate static plugin in Qt 5.0-5.5.
+// Qt 5.7+ merged accessibility into Qt5Widgets so the standalone
+// qt_static_plugin_AccessibleFactory symbol no longer exists.
+#if QT_VERSION < 0x050700
 Q_IMPORT_PLUGIN(AccessibleFactory)
+#endif
 #if defined(Q_OS_WIN) || defined(WIN32) || defined(_WIN32)
 Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin);
 #elif defined(QT_QPA_PLATFORM_XCB)

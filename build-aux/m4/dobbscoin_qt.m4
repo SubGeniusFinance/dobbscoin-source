@@ -117,7 +117,29 @@ AC_DEFUN([DOBBSCOIN_QT_CONFIGURE],[
       if test x$use_pkgconfig = xyes; then
         PKG_CHECK_MODULES([QTPLATFORM], [Qt5PlatformSupport], [QT_LIBS="$QTPLATFORM_LIBS $QT_LIBS"])
       fi
-      _DOBBSCOIN_QT_CHECK_STATIC_PLUGINS([Q_IMPORT_PLUGIN(AccessibleFactory)], [-lqtaccessiblewidgets])
+      dnl Qt 5.7+ requires Qt5PlatformSupport + transitive deps that pkg-config
+      dnl sometimes fails to wire up cleanly. Force-link the static helpers
+      dnl QWindows* needs at the head of QT_LIBS to satisfy the resolver.
+      if test x$qt_lib_path != x; then
+        if test -f "$qt_lib_path/libQt5PlatformSupport.a"; then
+          QT_LIBS="-lQt5PlatformSupport $QT_LIBS"
+        fi
+        if test -f "$qt_lib_path/libqtharfbuzzng.a"; then
+          QT_LIBS="$QT_LIBS -lqtharfbuzzng"
+        fi
+        if test -f "$qt_lib_path/libqtpng.a"; then
+          QT_LIBS="$QT_LIBS -lqtpng"
+        fi
+        if test -f "$qt_lib_path/libqtpcre.a"; then
+          QT_LIBS="$QT_LIBS -lqtpcre"
+        fi
+      fi
+      dnl AccessibleFactory was a separate plugin in Qt 5.0-5.5; in Qt 5.7+
+      dnl it's merged into Qt5Widgets so the standalone lib no longer exists.
+      dnl Skip the static-plugin check when libqtaccessiblewidgets.a is absent.
+      if test -f "$qt_plugin_path/accessible/libqtaccessiblewidgets.a"; then
+        _DOBBSCOIN_QT_CHECK_STATIC_PLUGINS([Q_IMPORT_PLUGIN(AccessibleFactory)], [-lqtaccessiblewidgets])
+      fi
       if test x$TARGET_OS = xwindows; then
         _DOBBSCOIN_QT_CHECK_STATIC_PLUGINS([Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin)],[-lqwindows])
         AC_DEFINE(QT_QPA_PLATFORM_WINDOWS, 1, [Define this symbol if the qt platform is windows])
