@@ -34,7 +34,7 @@ SHA256: [tt]f7eb48b39871e7cbf5573d52a740e7700c6f35f02e4434e159c2f9bf3e146dfa[/tt
 
 [b]Linux self-contained AppImage (one file, no install, runs on any modern distro):[/b]
 [b]https://github.com/SubGeniusFinance/dobbscoin-source/releases/download/v0.11.0/dobbscoin-0.11.0-x86_64.AppImage[/b]
-SHA256: [tt]fa5cf66edfd8e505c301eadbd6fdfd6bdd0f0290e3302cc4c31142ee986baaba[/tt]
+SHA256: [tt]f22bfaccd047fe07180358e721b0cf1f6741d61ccd0bea88e7492ea091cf40ad[/tt]
 
 [b]Linux dynamic GUI (smaller, requires system Qt5):[/b]
 https://github.com/SubGeniusFinance/dobbscoin-source/releases/download/v0.11.0/dobbscoin-0.11.0-qt5-x86_64-linux.tar.gz
