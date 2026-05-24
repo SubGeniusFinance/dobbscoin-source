@@ -23,8 +23,8 @@ Build-Depends: debhelper,
  libprotobuf-dev, protobuf-compiler
 Standards-Version: 3.9.2
 Homepage: http://www.dobbscoin.org/
-Vcs-Git: git://github.com/dobbscoin/dobbscoin.git
-Vcs-Browser: http://github.com/dobbscoin/dobbscoin
+Vcs-Git: git://github.com/SubGeniusFinance/dobbscoin-source.git
+Vcs-Browser: http://github.com/SubGeniusFinance/dobbscoin-source
 
 Package: dobbscoind
 Architecture: any

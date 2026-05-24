@@ -394,5 +394,5 @@ Uploading signatures
 ---------------------
 
 After building and signing you can push your signatures (both the `.assert` and `.assert.sig` files) to the
-[dobbscoin/gitian.sigs](https://github.com/dobbscoin/gitian.sigs/) repository, or if that's not possible create a pull
+[SubGeniusFinance/gitian.sigs](https://github.com/SubGeniusFinance/gitian.sigs/) repository, or if that's not possible create a pull
 request. You can also mail the files to me (laanwj@gmail.com) and I'll commit them.
