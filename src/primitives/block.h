@@ -6,10 +6,13 @@
 #ifndef DOBBSCOIN_PRIMITIVES_BLOCK_H
 #define DOBBSCOIN_PRIMITIVES_BLOCK_H
 
+#include "auxpow.h"
 #include "primitives/pureheader.h"
 #include "primitives/transaction.h"
 #include "serialize.h"
 #include "uint256.h"
+
+#include <memory>
 
 /** The maximum allowed size for a serialized block, in bytes (network rule) */
 static const unsigned int MAX_BLOCK_SIZE = 1000000;
@@ -26,6 +29,11 @@ class CBlockHeader : public CPureBlockHeader
 public:
     static const int32_t CURRENT_VERSION=3;
 
+    // Optional AuxPoW trailer.  Present iff IsAuxpow() — gated by the
+    // VERSION_AUXPOW bit in nVersion.  Activation of the bit is controlled
+    // by HARDFORK_AUXPOW_MAIN; pre-fork blocks must leave this null.
+    std::shared_ptr<CAuxPow> auxpow;
+
     CBlockHeader()
     {
         SetNull();
@@ -36,13 +44,29 @@ public:
     template <typename Stream, typename Operation>
     inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
         READWRITE(*(CPureBlockHeader*)this);
+
+        if (this->IsAuxpow()) {
+            if (ser_action.ForRead())
+                auxpow.reset(new CAuxPow());
+            assert(auxpow);
+            READWRITE(*auxpow);
+        } else if (ser_action.ForRead()) {
+            auxpow.reset();
+        }
     }
 
     void SetNull()
     {
         CPureBlockHeader::SetNull();
         nVersion = CBlockHeader::CURRENT_VERSION;
+        auxpow.reset();
     }
+
+    /**
+     * Attach (or clear) an auxpow.  Sets the VERSION_AUXPOW bit accordingly.
+     * Takes ownership of apow.  Pass NULL to clear.
+     */
+    void SetAuxpow(CAuxPow* apow);
 };
 
 
@@ -90,6 +114,7 @@ public:
         block.nTime          = nTime;
         block.nBits          = nBits;
         block.nNonce         = nNonce;
+        block.auxpow         = auxpow;
         return block;
     }
 

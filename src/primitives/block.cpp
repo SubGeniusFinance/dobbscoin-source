@@ -9,6 +9,17 @@
 #include "tinyformat.h"
 #include "utilstrencodings.h"
 
+void CBlockHeader::SetAuxpow(CAuxPow* apow)
+{
+    if (apow) {
+        auxpow.reset(apow);
+        SetAuxpowFlag(true);
+    } else {
+        auxpow.reset();
+        SetAuxpowFlag(false);
+    }
+}
+
 uint256 CBlock::BuildMerkleTree(bool* fMutated) const
 {
     /* WARNING! If you're reading this because you're learning about crypto
