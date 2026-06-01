@@ -139,6 +139,14 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
         const int nHeight = pindexPrev->nHeight + 1;
         CCoinsViewCache view(pcoinsTip);
 
+        // AuxPoW activation: stamp our chain ID into nVersion at and after
+        // the fork height.  Without this, the contextual block-header check
+        // would reject our own minted blocks for declaring chain ID 0.
+        // Solo blocks here always leave VERSION_AUXPOW unset; the
+        // submitauxblock RPC path is what sets it for merge-mined work.
+        if (nHeight >= AuxPowForkHeight())
+            pblock->SetChainId(AUXPOW_CHAIN_ID);
+
         // Priority order to process transactions
         list<COrphan> vOrphan; // list memory doesn't move
         map<uint256, vector<COrphan*> > mapDependers;

@@ -634,6 +634,24 @@ int64_t LWMA3ForkHeight()
                                                : HARDFORK_LWMA3_MAIN;
 }
 
+int AuxPowForkHeight()
+{
+    return Params().AllowMinDifficultyBlocks() ? HARDFORK_AUXPOW_TESTNET
+                                               : HARDFORK_AUXPOW_MAIN;
+}
+
+bool CheckAuxPowProofOfWork(const CBlockHeader& block)
+{
+    if (block.IsAuxpow()) {
+        if (!block.auxpow)
+            return error("CheckAuxPowProofOfWork: VERSION_AUXPOW set but no auxpow attached");
+        if (!block.auxpow->check(block.GetHash(), AUXPOW_CHAIN_ID))
+            return error("CheckAuxPowProofOfWork: auxpow commitment chain failed");
+        return CheckProofOfWork(block.auxpow->getParentBlockPoWHash(), block.nBits);
+    }
+    return CheckProofOfWork(block.GetPoWHash(), block.nBits);
+}
+
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock)
 {
     int DiffMode = 1;

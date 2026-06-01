@@ -1259,7 +1259,7 @@ bool ReadBlockFromDisk(CBlock& block, const CDiskBlockPos& pos)
     }
 
     // Check the header
-    if (!CheckProofOfWork(block.GetPoWHash(), block.nBits))
+    if (!CheckAuxPowProofOfWork(block))
         return error("ReadBlockFromDisk : Errors in block header");
 
     return true;
@@ -2570,8 +2570,12 @@ bool FindUndoPos(CValidationState &state, int nFile, CDiskBlockPos &pos, unsigne
 
 bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, bool fCheckPOW)
 {
-    // Check proof of work matches claimed amount
-    if (fCheckPOW && !CheckProofOfWork(block.GetPoWHash(), block.nBits))
+    // Check proof of work matches claimed amount.  AuxPoW-aware: if the
+    // header has VERSION_AUXPOW set, the parent block's scrypt hash is
+    // what must satisfy nBits; otherwise the header's own scrypt hash.
+    // The height-dependent rules (chain ID, VERSION_AUXPOW only allowed
+    // post-fork) are enforced in ContextualCheckBlockHeader.
+    if (fCheckPOW && !CheckAuxPowProofOfWork(block))
         return state.DoS(50, error("CheckBlockHeader() : proof of work failed"),
                          REJECT_INVALID, "high-hash");
 
@@ -2664,6 +2668,24 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
        (block.nBits != GetNextWorkRequired(pindexPrev, &block)))
         return state.DoS(100, error("%s : incorrect proof of work", __func__),
                          REJECT_INVALID, "bad-diffbits");
+
+    // AuxPoW activation: pre-fork blocks must leave VERSION_AUXPOW unset and
+    // chain ID zero; post-fork blocks must declare AUXPOW_CHAIN_ID.  An
+    // AuxPoW-extended block before the fork height — even one whose merkle
+    // proofs check out — is a consensus violation.
+    const int auxpowFork = AuxPowForkHeight();
+    if (nHeight < auxpowFork) {
+        if (block.IsAuxpow())
+            return state.DoS(100, error("%s : VERSION_AUXPOW set before activation height %d", __func__, auxpowFork),
+                             REJECT_INVALID, "premature-auxpow");
+        if (block.GetChainId() != 0)
+            return state.DoS(100, error("%s : nonzero chain ID before activation height %d", __func__, auxpowFork),
+                             REJECT_INVALID, "premature-chainid");
+    } else {
+        if (block.GetChainId() != AUXPOW_CHAIN_ID)
+            return state.DoS(100, error("%s : wrong chain ID %d (expected %d)", __func__, block.GetChainId(), AUXPOW_CHAIN_ID),
+                             REJECT_INVALID, "bad-chainid");
+    }
 
     // Check timestamp against prev
     if (block.GetBlockTime() <= pindexPrev->GetMedianTimePast())
