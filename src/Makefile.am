@@ -74,6 +74,7 @@ DOBBSCOIN_CORE_H = \
   alert.h \
   allocators.h \
   amount.h \
+  auxpow.h \
   base58.h \
   bloom.h \
   chain.h \
@@ -236,6 +237,7 @@ libdobbscoin_common_a_CPPFLAGS = $(DOBBSCOIN_INCLUDES)
 libdobbscoin_common_a_SOURCES = \
   allocators.cpp \
   amount.cpp \
+  auxpow.cpp \
   base58.cpp \
   chainparams.cpp \
   coins.cpp \
