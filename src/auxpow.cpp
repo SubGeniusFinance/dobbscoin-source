@@ -15,8 +15,18 @@
 #include "utilstrencodings.h"
 
 #include <algorithm>
-#include <cstring>
-#include <endian.h>
+#include <cstdint>
+
+namespace {
+// Read a little-endian uint32 from a byte cursor.  Portable across glibc
+// (which has <endian.h> + le32toh) and mingw (which has neither).
+inline uint32_t ReadLE32(const unsigned char* pc) {
+    return  (uint32_t)pc[0]
+         | ((uint32_t)pc[1] <<  8)
+         | ((uint32_t)pc[2] << 16)
+         | ((uint32_t)pc[3] << 24);
+}
+} // anon
 
 bool CAuxPow::check(const uint256& hashAuxBlock, int nChainId) const
 {
@@ -74,16 +84,12 @@ bool CAuxPow::check(const uint256& hashAuxBlock, int nChainId) const
     if (script.end() - pc < 8)
         return error("AuxPow missing chain merkle tree size and nonce in parent coinbase");
 
-    uint32_t nSize;
-    std::memcpy(&nSize, &pc[0], 4);
-    nSize = le32toh(nSize);
+    const uint32_t nSize = ReadLE32(reinterpret_cast<const unsigned char*>(&pc[0]));
     const unsigned merkleHeight = vChainMerkleBranch.size();
     if (nSize != (1u << merkleHeight))
         return error("AuxPow merkle branch size does not match parent coinbase");
 
-    uint32_t nNonce;
-    std::memcpy(&nNonce, &pc[4], 4);
-    nNonce = le32toh(nNonce);
+    const uint32_t nNonce = ReadLE32(reinterpret_cast<const unsigned char*>(&pc[4]));
     if (nChainIndex != getExpectedIndex(nNonce, nChainId, merkleHeight))
         return error("AuxPow wrong index");
 
