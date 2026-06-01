@@ -15,6 +15,8 @@
 
 #include <vector>
 
+class CBlockHeader;
+
 /** Header magic prefix for the AuxPoW commitment inside a parent block's
  *  coinbase scriptSig.  See CAuxPow::check(). */
 static const unsigned char pchMergedMiningHeader[] = { 0xfa, 0xbe, 'm', 'm' };
@@ -108,6 +110,17 @@ public:
     static uint256 CheckMerkleBranch(uint256 hash,
                                      const std::vector<uint256>& vMerkleBranch,
                                      int nIndex);
+
+    /**
+     * Fabricate a minimal valid AuxPoW structure attached to `header`.  The
+     * resulting parent block is a single-tx fake block whose coinbase
+     * scriptSig embeds the (BOB) header's hash (byte-reversed) as the
+     * required chain merkle root.  Used by the createauxblock RPC to set up
+     * the cached template and by the Boost.Test fixtures.  The auxpow.check()
+     * call will pass; the PoW on the parent block is whatever the caller
+     * subsequently solves it to.
+     */
+    static void initAuxPow(CBlockHeader& header);
 };
 
 #endif // DOBBSCOIN_AUXPOW_H

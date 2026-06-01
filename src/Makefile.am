@@ -177,6 +177,7 @@ libdobbscoin_server_a_SOURCES = \
   noui.cpp \
   pow.cpp \
   rest.cpp \
+  rpc_auxpow.cpp \
   rpcblockchain.cpp \
   rpcmining.cpp \
   rpcmisc.cpp \

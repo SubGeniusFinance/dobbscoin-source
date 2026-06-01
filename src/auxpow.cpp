@@ -9,6 +9,7 @@
 #include "auxpow.h"
 
 #include "hash.h"
+#include "primitives/block.h"
 #include "script/script.h"
 #include "util.h"
 #include "utilstrencodings.h"
@@ -119,4 +120,38 @@ uint256 CAuxPow::CheckMerkleBranch(uint256 hash,
         nIndex >>= 1;
     }
     return hash;
+}
+
+void CAuxPow::initAuxPow(CBlockHeader& header)
+{
+    // Flip the AuxPoW bit before computing the hash so the merge-miner's
+    // commitment is to the post-flag block hash.
+    header.SetAuxpowFlag(true);
+
+    const uint256 blockHash = header.GetHash();
+    std::vector<unsigned char> inputData(blockHash.begin(), blockHash.end());
+    std::reverse(inputData.begin(), inputData.end());
+    inputData.push_back(1);                       // merkle tree size (1 << 0)
+    inputData.insert(inputData.end(), 7, 0);      // size hi-bytes + 4-byte nonce
+
+    // Minimal parent coinbase: one input with the chain commitment, no outputs.
+    CMutableTransaction coinbase;
+    coinbase.vin.resize(1);
+    coinbase.vin[0].prevout.SetNull();
+    coinbase.vin[0].scriptSig = (CScript() << inputData);
+
+    // Fake parent block with that single coinbase.
+    CBlock parent;
+    parent.nVersion = 1;
+    parent.vtx.resize(1);
+    parent.vtx[0] = CTransaction(coinbase);
+    parent.hashMerkleRoot = parent.BuildMerkleTree();
+
+    // Attach.  Branches are empty (height 0); both indices 0.
+    header.SetAuxpow(new CAuxPow(parent.vtx[0]));
+    assert(header.auxpow->vChainMerkleBranch.empty());
+    header.auxpow->nChainIndex = 0;
+    assert(header.auxpow->vMerkleBranch.empty());
+    header.auxpow->nIndex = 0;
+    header.auxpow->parentBlock = parent;
 }
