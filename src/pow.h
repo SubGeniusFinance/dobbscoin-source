@@ -31,10 +31,11 @@ static const int MAX_REORG_DEPTH = 100;
 // LWMA-3 settles. From this height: header chain ID must equal
 // AUXPOW_CHAIN_ID; pre-fork the chain ID must be zero and the
 // VERSION_AUXPOW bit must be unset.
-// Testnet/regtest: trip shortly after LWMA-3 testnet activation so test
-// infra exercises both forks.
+// Testnet/regtest: trip at block 10 — before LWMA-3's testnet activation
+// at 100, so regtest CPU mining stays at V1 difficulty and finishes quickly
+// when test harnesses generate blocks past the fork.
 static const int HARDFORK_AUXPOW_MAIN    = 2000000;
-static const int HARDFORK_AUXPOW_TESTNET = 200;
+static const int HARDFORK_AUXPOW_TESTNET = 10;
 
 // (BOB)'s AuxPoW chain ID, encoded in the upper 16 bits of nVersion on
 // post-fork blocks. 0x00B0 — "B0b" mnemonic, picked for non-collision
