@@ -6,6 +6,7 @@
 #ifndef DOBBSCOIN_PRIMITIVES_BLOCK_H
 #define DOBBSCOIN_PRIMITIVES_BLOCK_H
 
+#include "primitives/pureheader.h"
 #include "primitives/transaction.h"
 #include "serialize.h"
 #include "uint256.h"
@@ -20,17 +21,10 @@ static const unsigned int MAX_BLOCK_SIZE = 1000000;
  * in the block is a special one that creates a new coin owned by the creator
  * of the block.
  */
-class CBlockHeader
+class CBlockHeader : public CPureBlockHeader
 {
 public:
-    // header
     static const int32_t CURRENT_VERSION=3;
-    int32_t nVersion;
-    uint256 hashPrevBlock;
-    uint256 hashMerkleRoot;
-    uint32_t nTime;
-    uint32_t nBits;
-    uint32_t nNonce;
 
     CBlockHeader()
     {
@@ -41,36 +35,13 @@ public:
 
     template <typename Stream, typename Operation>
     inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
-        READWRITE(this->nVersion);
-        nVersion = this->nVersion;
-        READWRITE(hashPrevBlock);
-        READWRITE(hashMerkleRoot);
-        READWRITE(nTime);
-        READWRITE(nBits);
-        READWRITE(nNonce);
+        READWRITE(*(CPureBlockHeader*)this);
     }
 
     void SetNull()
     {
+        CPureBlockHeader::SetNull();
         nVersion = CBlockHeader::CURRENT_VERSION;
-        hashPrevBlock = 0;
-        hashMerkleRoot = 0;
-        nTime = 0;
-        nBits = 0;
-        nNonce = 0;
-    }
-
-    bool IsNull() const
-    {
-        return (nBits == 0);
-    }
-
-    uint256 GetHash() const;
-    uint256 GetPoWHash() const;
-
-    int64_t GetBlockTime() const
-    {
-        return (int64_t)nTime;
     }
 };
 

@@ -8,16 +8,6 @@
 #include "hash.h"
 #include "tinyformat.h"
 #include "utilstrencodings.h"
-#include "crypto/scrypt.h"
-
-uint256 CBlockHeader::GetHash() const
-{
-    return Hash(BEGIN(nVersion), END(nNonce));
-}
-uint256 CBlockHeader::GetPoWHash() const
-{
-    return HashScrypt(BEGIN(nVersion), END(nNonce));
-}
 
 uint256 CBlock::BuildMerkleTree(bool* fMutated) const
 {
