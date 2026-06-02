@@ -1,0 +1,141 @@
+[size=14pt][b]🚨 PRAISE "BOB" — MANDATORY UPGRADE — Dobbscoin (BOB) v0.13.0 — Emergency Difficulty Recovery — Block 1,888,888 (~July 16, 2026, ~07:00 UTC)[/b][/size]
+
+The lathe has a safety valve now.
+
+v0.11.0 gave (BOB) Pinkboy-repellent at the difficulty algorithm. v0.12.0 opened the AuxPoW gate so the chain could call in real scrypt hashrate for once. Both shipped. Both stand. But there was one Glorp-flavoured edge case left on the table — and v0.13.0 closes it.
+
+[size=12pt][b]The Problem Nobody Talked About[/b][/size]
+
+LWMA-3 retargets fast. ~30 blocks. That's the whole point. But [b]LWMA-3 cannot retarget at all without blocks being mined[/b]. The algorithm is a moving average — no new data point, no new average.
+
+So picture this: AuxPoW activates at block 2,000,000. Some opportunistic LTC pool sniffs Slack, decides to merge-mine (BOB) for a few hours, drives the difficulty into orbit, and then [b]drops us[/b] to chase something fancier. The pool leaves. The lone (BOB) miner's ~135 MH/s scrypt is now staring at a difficulty that was set when there was 7,000,000× more hash on the network. Expected time to next block at that difficulty: [b]years[/b].
+
+LWMA-3 can fix it. But LWMA-3 needs blocks to do it. No blocks → no fix. Chicken, meet egg. The Conspiracy meets its dream scenario: (BOB) silenced by its own difficulty adjustment, no 51% attack required.
+
+[size=12pt][b]The Rule[/b][/size]
+
+[b]v0.13.0 hardforks (BOB) at block 1,888,888 — ~2026-07-16 ~07:00 UTC — for one new consensus rule:[/b]
+
+[list]
+[li][b]Emergency-difficulty recovery.[/b] After a 6-hour stall ([tt]block.nTime - prev.nTime > 21600[/tt]), the chain will accept a single block at [b]min-difficulty[/b] regardless of what LWMA-3 computed. That block's long solvetime then enters the LWMA-3 window and difficulty starts coming back down. Normal retargeting takes over within ~N blocks. The chicken-and-egg is broken.[/li]
+[/list]
+
+The rule has teeth. [b]Both[/b] conditions must hold — strictly more than 6 hours AND the miner declaring min-difficulty. Exactly 6h on the nose doesn't qualify. And if a miner finds a block at better-than-min in the meantime, [b]they must publish it at the better target.[/b] The exemption is a safety valve, not a free pass for lazy miners. Slack is not freely given. Slack is earned by submitting the work you actually did.
+
+[size=12pt][b]Three Forks, One Wallet[/b][/size]
+
+v0.13.0 is the consolidation release. All three consensus forks of 2026 are now baked in:
+
+[list]
+[li][b]LWMA-3 + 100-block max-reorg[/b] — block 1,888,808 (~July 16, ~04:19 UTC). Inherited from v0.11.0.[/li]
+[li][b]Emergency-difficulty recovery[/b] — block 1,888,888 (~July 16, ~07:00 UTC). [b]New in v0.13.0.[/b][/li]
+[li][b]AuxPoW merge-mining (chain ID 0x00B0)[/b] — block 2,000,000 (~December 17, 2026). Inherited from v0.12.0.[/li]
+[/list]
+
+[b]Anyone still running v0.11.0 or v0.12.0 at block 1,888,888 will be forked off[/b] when the first emergency block lands. v0.10.x is already past its upgrade window for LWMA-3. v0.13.0 is the only sane wallet for any (BOB)-holder going into July.
+
+[size=12pt][b]First Reproducible-Build Release[/b][/size]
+
+Something new this time, beyond consensus: [b]these binaries were built by GitHub Actions CI, not from any developer's laptop.[/b] Anyone with the [tt]v0.13.0[/tt] git tag and an [tt]ubuntu-22.04[/tt] runner can rebuild the exact SHA256s shown below. The workflow lives at [tt].github/workflows/release.yml[/tt] in the source tree. Win64 binaries are also audited for orphan runtime DLL leaks — the .exe files only link against Win32 system DLLs (no Qt5*.dll, no libwinpthread, no libgcc_s). Self-contained, by enforced rule. Trust no Pinkboy. Verify the lathe.
+
+[size=12pt][b]How Tested[/b][/size]
+
+[list]
+[li]6 Boost.Test cases in [tt]src/test/emergency_diff_tests.cpp[/tt] assert the predicate directly — pre-fork inactive, normal block at min-diff rejected, 6h+ gap accepted, better-than-min not-emergency, exactly-6h-edge rejected, NULL-prev safe. All pass.[/li]
+[li]All v0.11.0 / v0.12.0 consensus tests ([tt]lwma3_tests[/tt], [tt]auxpow_tests[/tt], [tt]checkblock_tests[/tt], [tt]pow_tests[/tt], [tt]miner_tests[/tt], [tt]DoS_tests[/tt]) re-run clean against v0.13.0's tree. Zero regressions.[/li]
+[li]Win64 cross-compile passes the DLL-dependency audit step before binaries are even uploaded.[/li]
+[/list]
+
+[hr]
+
+[size=12pt][b]Download v0.13.0 — Choose Your Weapon[/b][/size]
+
+[b]Windows (most Pinkboys):[/b]
+[b]https://github.com/SubGeniusFinance/dobbscoin-source/releases/download/v0.13.0/dobbscoin-v0.13.0-win64.zip[/b]
+SHA256: [tt]56e65fd9342d1fdd104a6241c9638d77ccea431a57e5f7f341a210c1631a1c9f[/tt]
+
+[b]Linux self-contained AppImage (one file, no install, runs on any modern distro):[/b]
+[b]https://github.com/SubGeniusFinance/dobbscoin-source/releases/download/v0.13.0/dobbscoin-v0.13.0-x86_64.AppImage[/b]
+SHA256: [tt]10d191357455fb3c8b0d83a04c9863e6de326186425693f02b9737e9ceb41c15[/tt]
+
+[b]Linux dynamic GUI (smaller, requires system Qt5):[/b]
+https://github.com/SubGeniusFinance/dobbscoin-source/releases/download/v0.13.0/dobbscoin-v0.13.0-linux-qt.tar.gz
+SHA256: [tt]4aa0349249dbbb6aa6eea8152e8012cc1aaf76a2b4524949acc422d5ffd054cb[/tt]
+
+[b]Linux daemon-only (pool ops, miners, headless boxes):[/b]
+https://github.com/SubGeniusFinance/dobbscoin-source/releases/download/v0.13.0/dobbscoin-v0.13.0-linux-daemon.tar.gz
+SHA256: [tt]7185523b7f26717f81c3a7fd2b3d606daea8fa88b6deea98403e0ea50e33c897[/tt]
+
+[b]All checksums in one file:[/b] https://github.com/SubGeniusFinance/dobbscoin-source/releases/download/v0.13.0/SHA256SUMS.txt
+
+[b]Source + tag + checksums:[/b] https://github.com/SubGeniusFinance/dobbscoin-source/releases/tag/v0.13.0
+
+[hr]
+
+[size=12pt][b]How To Upgrade — Windows[/b][/size]
+
+[list=1]
+[li][b]Back up wallet.dat.[/b] (BOB) is NOT for Sale, but it is yours to lose. Default Windows location: [tt]%APPDATA%\Dobbscoin\wallet.dat[/tt] — copy it somewhere safe before you touch anything.[/li]
+[li][b]Close[/b] your running wallet completely. File → Exit. Open Task Manager and confirm there are no zombie [tt]dobbscoind.exe[/tt] or [tt]dobbscoin-qt.exe[/tt] processes still wandering around.[/li]
+[li][b]Download[/b] [tt]dobbscoin-v0.13.0-win64.zip[/tt] from the link above.[/li]
+[li][b]Verify[/b] the SHA256: [tt]CertUtil -hashfile dobbscoin-v0.13.0-win64.zip SHA256[/tt]. It should match [tt]56e65fd9...[/tt] from above. If it doesn't, you got something other than what we shipped — back away.[/li]
+[li][b]Extract[/b] the zip. You'll find [tt]dobbscoin-qt.exe[/tt] and [tt]dobbscoind.exe[/tt] inside.[/li]
+[li][b]Replace[/b] the old binaries with the new ones (typically in [tt]C:\Program Files\Dobbscoin\[/tt]) or just run [tt]dobbscoin-qt.exe[/tt] straight from the extracted folder. SmartScreen will warn you — click "More info" → "Run anyway". The Conspiracy code-signs nothing; we keep our Slack.[/li]
+[li][b]Launch[/b] [tt]dobbscoin-qt.exe[/tt]. Confirm via Help → About that it reads [b]v0.13.0[/b].[/li]
+[li]Let it sync. Your wallet.dat, balances, addresses, history — all untouched. Same Slack, three new firmaments.[/li]
+[/list]
+
+[size=12pt][b]How To Upgrade — Linux (Easy Mode)[/b][/size]
+
+[code]wget https://github.com/SubGeniusFinance/dobbscoin-source/releases/download/v0.13.0/dobbscoin-v0.13.0-x86_64.AppImage
+chmod +x dobbscoin-v0.13.0-x86_64.AppImage
+./dobbscoin-v0.13.0-x86_64.AppImage[/code]
+
+One file. No dependencies. No [tt]apt install[/tt]. The AppImage carries its own Qt5 around like a self-respecting prophet.
+
+[hr]
+
+[size=12pt][b]Timeline[/b][/size]
+
+[list]
+[li][b]NOW[/b] — v0.13.0 is on the table. Praise "Bob".[/li]
+[li][b]~July 16, 2026, ~04:19 UTC[/b] — Block 1,888,808. LWMA-3 + max-reorg-100 activate (inherited from v0.11.0, already in v0.12.0, now also in v0.13.0).[/li]
+[li][b]~July 16, 2026, ~07:00 UTC[/b] — Block 1,888,888. [b]Emergency-difficulty recovery activates. v0.11.0 and v0.12.0 nodes fork off here[/b] if any emergency block ever lands.[/li]
+[li][b]~December 17, 2026[/b] — Block 2,000,000. AuxPoW merge-mining activates. Chain ID 0x00B0 becomes consensus. (BOB) is ready to call in scrypt hashrate without fear of being stranded if it leaves.[/li]
+[/list]
+
+[hr]
+
+[size=12pt][b]Mining[/b][/size]
+
+[tt]pool.dobbscoin.info[/tt] will upgrade well before activation. The stratum protocol is unchanged — your miner config does not need to change at all. If you solo-mine via [tt]dobbscoind[/tt], you upgrade [tt]dobbscoind[/tt] yourself. Same as it ever was.
+
+Post-AuxPoW (December), pool operators can also wire (BOB) into a merge-mining setup via the [tt]createauxblock[/tt] / [tt]submitauxblock[/tt] RPCs. MiningCore-compatible. But that's a December conversation. For July: just upgrade and keep mining the way you already do.
+
+[hr]
+
+[size=12pt][b]What Does NOT Change[/b][/size]
+
+[list]
+[li]Subsidy: still 1.5 (BOB)/block forever. No halving curve adjustment. Inflation arithmetic is the same as it was yesterday.[/li]
+[li]Address format. RPC dialect. P2P protocol. Wallet.dat format.[/li]
+[li]The "21 million" myth remains debunked. [tt]MAX_MONEY[/tt] is still a 10B sanity ceiling, not a supply cap. (BOB) was never deflationary and never will be. We are not Bitcoin. We are [b]MONETIZED SLACK[/b].[/li]
+[li]Solo mining still works post-AuxPoW. Merge-mining is additive, not mandatory. The lone (BOB) miner keeps the option to solo-mine direct — and now keeps the option to keep mining even if everyone else leaves.[/li]
+[/list]
+
+[hr]
+
+[size=12pt][b]Praise "Bob".[/b][/size]
+
+(BOB) is NOT for Sale. Backed By Nothing, Powered By Everything. ETERNAL SALVATION OR TRIPLE YOUR MONEY BACK.
+
+The Conspiracy will not protect you. Only Slack will. Only "Bob" will.
+
+[size=10pt][b][color=red]NOT FINANCIAL ADVISORS. NOT FINANCIAL ADVICE.[/color][/b][/size]
+
+[hr]
+
+Release page: [b]https://github.com/SubGeniusFinance/dobbscoin-source/releases/tag/v0.13.0[/b]
+Project home: https://dobbscoin.info/
+Source: https://github.com/SubGeniusFinance/dobbscoin-source
+The Bridge: https://bridge.subgenius.finance/
