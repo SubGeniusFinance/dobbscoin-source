@@ -79,6 +79,12 @@ jobs:
             'https://download.oracle.com/berkeley-db/db-4.8.30.NC.tar.gz'
           echo "${BDB_TARBALL_SHA256}  db-4.8.30.NC.tar.gz" | sha256sum -c
           tar -xzf db-4.8.30.NC.tar.gz
+          # gcc-11+ has its own __atomic_compare_exchange builtin which collides
+          # with BDB 4.8's static inline of the same name. Rename BDB's copy.
+          # Standard altcoin-community fix; safe because all in-tree call sites
+          # go through the atomic_compare_exchange (no underscore) macro.
+          sed -i 's/__atomic_compare_exchange/__atomic_compare_exchange_db/g' \
+            db-4.8.30.NC/dbinc/atomic.h
           cd db-4.8.30.NC/build_unix
           ../dist/configure --enable-cxx --disable-shared --with-pic --prefix="$BDB_PREFIX"
           make -j"$(nproc)" install
