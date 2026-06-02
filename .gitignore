@@ -55,6 +55,7 @@ src/qt/test/moc*.cpp
 *.o
 *.o-*
 *.patch
+!depends/patches/**/*.patch
 .dobbscoin
 *.a
 *.pb.cc

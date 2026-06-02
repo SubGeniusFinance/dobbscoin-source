@@ -272,10 +272,10 @@ jobs:
         run: |
           mkdir -p AppDir/usr/bin AppDir/usr/share/applications \
                    AppDir/usr/share/icons/hicolor/256x256/apps
-          # The dobbscoin-qt binary is at the root of the uploaded artifact
-          # (the upload-artifact action flattens src/qt/dobbscoin-qt into
-          # linux-stage/dobbscoin-qt). Tarballs are also present but unused.
-          install -m 0755 linux-stage/dobbscoin-qt AppDir/usr/bin/dobbscoin-qt
+          # upload-artifact@v4 preserves the relative path of each uploaded
+          # file, so the binary lands at linux-stage/src/qt/dobbscoin-qt, not
+          # the flattened linux-stage/dobbscoin-qt.
+          install -m 0755 linux-stage/src/qt/dobbscoin-qt AppDir/usr/bin/dobbscoin-qt
           cp contrib/debian/dobbscoin-qt.desktop \
              AppDir/usr/share/applications/dobbscoin.desktop
           cp share/pixmaps/dobbscoin256.png \
