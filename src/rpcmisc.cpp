@@ -3,13 +3,18 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+#include "alert.h"
 #include "base58.h"
 #include "clientversion.h"
+#include "hash.h"
 #include "init.h"
+#include "key.h"
 #include "main.h"
 #include "net.h"
 #include "netbase.h"
+#include "protocol.h"
 #include "rpcserver.h"
+#include "streams.h"
 #include "timedata.h"
 #include "util.h"
 #ifdef ENABLE_WALLET
@@ -375,4 +380,82 @@ Value setmocktime(const Array& params, bool fHelp)
     SetMockTime(params[0].get_int64());
 
     return Value::null;
+}
+
+Value sendalert(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() < 6 || params.size() > 7)
+        throw runtime_error(
+            "sendalert <privkey> <message> <minver> <maxver> <priority> <id> [cancelupto]\n"
+            "<privkey> is hex string (64 chars, 32 bytes) of the alert master private key.\n"
+            "<message> is the alert text displayed in wallets (max 256 chars).\n"
+            "<minver> is the lowest CLIENT_VERSION the alert applies to (inclusive).\n"
+            "<maxver> is the highest CLIENT_VERSION the alert applies to (inclusive).\n"
+            "<priority> integer; higher is more important (typical 1000-7000).\n"
+            "<id> unique integer alert ID. Nodes only display alerts with new IDs.\n"
+            "[cancelupto] optional; cancels all prior alerts with id <= this.\n"
+            "\nReturns an object with the alert hash, message, expiration, and peer relay count.\n"
+        );
+
+    // Parse private key
+    std::vector<unsigned char> vchPrivKey = ParseHex(params[0].get_str());
+    if (vchPrivKey.size() != 32)
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "Private key must be 32-byte hex (64 chars)");
+    CKey key;
+    key.Set(vchPrivKey.begin(), vchPrivKey.end(), false);
+    if (!key.IsValid())
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "Private key is not valid secp256k1");
+
+    // Build the unsigned alert
+    CAlert alert;
+    alert.nVersion     = 1;
+    alert.nRelayUntil  = GetAdjustedTime() + 24 * 60 * 60;        // 1 day relay window
+    alert.nExpiration  = GetAdjustedTime() + 7 * 24 * 60 * 60;    // 7 day display window
+    alert.nID          = params[5].get_int();
+    alert.nCancel      = (params.size() > 6) ? params[6].get_int() : 0;
+    alert.nMinVer      = params[2].get_int();
+    alert.nMaxVer      = params[3].get_int();
+    alert.nPriority    = params[4].get_int();
+    alert.strComment   = "";
+    alert.strStatusBar = params[1].get_str();
+    alert.strReserved  = "";
+
+    // Serialize the unsigned form to vchMsg
+    CDataStream sMsg(SER_NETWORK, PROTOCOL_VERSION);
+    sMsg << *(CUnsignedAlert*)&alert;
+    alert.vchMsg = std::vector<unsigned char>(sMsg.begin(), sMsg.end());
+
+    // Sign
+    if (!key.Sign(Hash(alert.vchMsg.begin(), alert.vchMsg.end()), alert.vchSig))
+        throw JSONRPCError(RPC_INTERNAL_ERROR, "Failed to sign alert");
+
+    // Sanity-check signature against chainparams pubkey before broadcasting
+    if (!alert.CheckSignature())
+        throw JSONRPCError(RPC_INVALID_PARAMETER,
+                           "Signature does not verify against the alert pubkey baked into chainparams.cpp");
+
+    // Process locally (validates and adds to mapAlerts)
+    if (!alert.ProcessAlert(false))
+        throw JSONRPCError(RPC_INTERNAL_ERROR,
+                           "Alert was rejected locally (duplicate, cancelled, or expired)");
+
+    // Relay to every connected peer
+    int nRelayed = 0;
+    {
+        LOCK(cs_vNodes);
+        BOOST_FOREACH(CNode* pnode, vNodes)
+        {
+            if (alert.RelayTo(pnode))
+                nRelayed++;
+        }
+    }
+
+    Object result;
+    result.push_back(Pair("hash",        alert.GetHash().GetHex()));
+    result.push_back(Pair("id",          alert.nID));
+    result.push_back(Pair("message",     alert.strStatusBar));
+    result.push_back(Pair("expiration",  alert.nExpiration));
+    result.push_back(Pair("relayuntil",  alert.nRelayUntil));
+    result.push_back(Pair("relayed_to",  nRelayed));
+    return result;
 }

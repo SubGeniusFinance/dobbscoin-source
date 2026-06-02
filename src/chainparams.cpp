@@ -114,7 +114,9 @@ public:
         pchMessageStart[1] = 0xfb;
         pchMessageStart[2] = 0x17;
         pchMessageStart[3] = 0x83; 
-        vAlertPubKey = ParseHex("048D0BCFA9D2B74DE677EBDC9A369C398D9A4CBFCF7F8873E17EAAAE1CD340D127E871CAA0CD9F58CBB31A6D439BBA26559B6B5F03F6A309CD3C962694A8DA2F3E");
+        // Mainnet alert pubkey, rotated 2026-06-02 for v0.13.1 sendalert revival.
+        // The original 2014 Coingen-era key is presumed lost.
+        vAlertPubKey = ParseHex("0462c75c92104a819d251049c47bfe03f78320af2acf7598f315ef152ec9001ff7f4cc48bc6b53c746e02d83d376614066063b819aa3d3dfaa6050ef39ca761af8");
         nDefaultPort = 19985;
         bnProofOfWorkLimit = ~uint256(0) >> 20;
         nEnforceBlockUpgradeMajority = 2750;
