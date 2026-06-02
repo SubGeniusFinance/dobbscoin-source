@@ -640,6 +640,38 @@ int AuxPowForkHeight()
                                                : HARDFORK_AUXPOW_MAIN;
 }
 
+int EmergencyDiffForkHeight()
+{
+    return Params().AllowMinDifficultyBlocks() ? HARDFORK_EMERGENCY_DIFF_TESTNET
+                                               : HARDFORK_EMERGENCY_DIFF_MAIN;
+}
+
+bool IsEmergencyDifficultyBlock(const CBlockHeader& block, const CBlockIndex* pindexPrev)
+{
+    if (pindexPrev == NULL)
+        return false;
+
+    // Activation gate: pre-fork blocks can never invoke this relaxation.
+    if (pindexPrev->nHeight + 1 < EmergencyDiffForkHeight())
+        return false;
+
+    // (b) Strict-greater on the timestamp gap. Equality at exactly 6h is not
+    // sufficient — the rule fires only when the chain is genuinely stuck.
+    // nTime is unsigned; subtract in signed space to handle moderate clock
+    // skew (a header timestamp slightly behind prev) without underflow.
+    const int64_t gap = (int64_t)block.nTime - (int64_t)pindexPrev->nTime;
+    if (gap <= EMERGENCY_DIFFICULTY_GAP)
+        return false;
+
+    // (c) Min-difficulty only. A miner who can do better than powLimit after
+    // the stall must publish at that better target — claiming min-difficulty
+    // when you don't need it is rejected.
+    if (block.nBits != Params().ProofOfWorkLimit().GetCompact())
+        return false;
+
+    return true;
+}
+
 bool CheckAuxPowProofOfWork(const CBlockHeader& block)
 {
     if (block.IsAuxpow()) {

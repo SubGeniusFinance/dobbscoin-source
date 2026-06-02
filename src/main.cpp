@@ -2663,9 +2663,19 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
         block.hashPrevBlock.ToString(),
         block.hashMerkleRoot.ToString(),
         block.nTime, block.nBits, block.nNonce);
-    // Check proof of work
+    // Check proof of work.
+    //
+    // Emergency-difficulty fork (HARDFORK_EMERGENCY_DIFF_MAIN, v0.13.0):
+    // when a block follows a >6h stall AND carries nBits == ProofOfWorkLimit,
+    // the strict nBits == GetNextWorkRequired() check is bypassed. This lets
+    // the chain unstick itself after a hashrate-departure event (e.g. a
+    // merge-mining LTC pool leaves) without waiting for LWMA-3 to retarget —
+    // which it cannot do until blocks are actually mined. After the emergency
+    // block lands, its long solvetime enters LWMA-3's window and normal
+    // retargeting resumes within ~N blocks. See IsEmergencyDifficultyBlock.
     if ((!Params().SkipProofOfWorkCheck()) &&
-       (block.nBits != GetNextWorkRequired(pindexPrev, &block)))
+       (block.nBits != GetNextWorkRequired(pindexPrev, &block)) &&
+       !IsEmergencyDifficultyBlock(block, pindexPrev))
         return state.DoS(100, error("%s : incorrect proof of work", __func__),
                          REJECT_INVALID, "bad-diffbits");
 

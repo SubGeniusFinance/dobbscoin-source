@@ -60,6 +60,7 @@ DOBBSCOIN_TESTS =\
   test/pmt_tests.cpp \
   test/pow_tests.cpp \
   test/lwma3_tests.cpp \
+  test/emergency_diff_tests.cpp \
   test/rpc_tests.cpp \
   test/sanity_tests.cpp \
   test/script_P2SH_tests.cpp \

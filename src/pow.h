@@ -43,8 +43,37 @@ static const int HARDFORK_AUXPOW_TESTNET = 10;
 // LottoCoin=0x004C, etc).
 static const int AUXPOW_CHAIN_ID = 0x00B0;
 
+// Emergency-difficulty hard-fork activation heights.
+// Mainnet: block 1,888,888 — 80 blocks past LWMA-3, so the new LWMA window
+// has had a chance to stabilize before the emergency predicate becomes
+// consultable. The "888" mirrors LWMA-3's "808" vanity.
+// Testnet/regtest: trip early (block 20) so synthetic chains in the Boost
+// test harness can exercise both pre- and post-fork branches without
+// having to mine to 1.8M.
+//
+// The emergency rule itself: if a block's nTime - prevBlock->nTime exceeds
+// EMERGENCY_DIFFICULTY_GAP AND its nBits equals ProofOfWorkLimit(), the
+// strict nBits == GetNextWorkRequired() check in ContextualCheckBlockHeader
+// is relaxed for that one block. LWMA-3 then sees the long solvetime in
+// its rolling window and resumes normal retargeting. Only fires when the
+// chain is genuinely stuck (e.g. merge-mining hashrate departed).
+static const int HARDFORK_EMERGENCY_DIFF_MAIN    = 1888888;
+static const int HARDFORK_EMERGENCY_DIFF_TESTNET = 20;
+static const int64_t EMERGENCY_DIFFICULTY_GAP    = 6 * 60 * 60;  // 21600 s
+
 int64_t LWMA3ForkHeight();
 int AuxPowForkHeight();
+int EmergencyDiffForkHeight();
+
+/**
+ * Two-part predicate: a header is an "emergency difficulty" block iff
+ *   (a) its activation height has been reached (nHeight >= EmergencyDiffForkHeight)
+ *   (b) block.nTime - pindexPrev->nTime > EMERGENCY_DIFFICULTY_GAP, AND
+ *   (c) block.nBits == Params().ProofOfWorkLimit().GetCompact().
+ * Both (b) and (c) must hold; the gap-only case still requires the miner
+ * to publish at the normally-computed difficulty if they can.
+ */
+bool IsEmergencyDifficultyBlock(const CBlockHeader& block, const CBlockIndex* pindexPrev);
 
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock);
 
