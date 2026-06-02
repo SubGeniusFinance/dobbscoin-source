@@ -175,6 +175,13 @@ jobs:
 
       - name: Build depends/ (if cache miss)
         if: steps.cache-depends.outputs.cache-hit != 'true'
+        env:
+          # depends/Makefile's default FALLBACK_DOWNLOAD_PATH points at
+          # dobbscoincore.org, a domain that was never stood up. When upstream
+          # mirrors (snapshot.debian.org, etc.) 404 on legacy tarballs the
+          # whole build collapses. Bitcoin Core hosts the canonical pre-0.12
+          # depends tarball set including qrencode-3.4.3, openssl-1.0.1k, etc.
+          FALLBACK_DOWNLOAD_PATH: https://bitcoincore.org/depends-sources
         run: |
           make -C depends -j"$(nproc)" HOST=x86_64-w64-mingw32 NO_QT_TRANSLATIONS=1
 
