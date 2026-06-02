@@ -1,213 +1,180 @@
-========================================
-Dobbscoin Core integration/staging tree
-========================================
-Dobbscoin (BOB) is the Official CryptoCurrency of
-The Church of the SubGenius. http://www.subgenius.com
-The ONLY crypto-currency accepted on the Pleasure Saucers.
-Backed By Nothing, & Powered By Everything!!
+# Dobbscoin Core — (BOB)
 
-Dobbscoin (BOB) Homepage: https://www.dobbscoin.info
+[![Release](https://img.shields.io/github/v/release/SubGeniusFinance/dobbscoin-source?label=release)](https://github.com/SubGeniusFinance/dobbscoin-source/releases)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](COPYING)
+[![CI](https://github.com/SubGeniusFinance/dobbscoin-source/actions/workflows/release.yml/badge.svg)](https://github.com/SubGeniusFinance/dobbscoin-source/actions/workflows/release.yml)
 
-•  Maybe you've come into a large inheritance, or your income just suddenly popped. 
-•  Maybe you gave birth to quintuplets or been recently divorced. Or maybe you just feel uneasy about your money; where it's going or how far it will take you in the future.
+> # **MONETIZED SLACK.**
+> ### Backed By Nothing. Powered By Everything.
+>
+> **(BOB)** is the Official CryptoCurrency of **The Church of the SubGenius** — the ONLY currency accepted on the Pleasure Saucers, and the only ledger "Bob" Himself would dignify by salesmanship.
+>
+> *Eternal Salvation or Triple Your Money Back.*
 
-Whatever your problem is, Dobbscoin can help you.
+**<https://dobbscoin.info>** · **<https://subgenius.finance>** — *where Sub-Culture becomes Capital.*
 
-Will you join The Conspiracy's mindless atheistic unknowing servitude to the Elder Bankers of the Universe and their MINIONS in some hideous World Government, ..or will you GET SLACK and FIGHT FOR FREEDOM as a zeal-crazed Priest-Warrior for ODIN?
+Maybe your income just suddenly popped. Maybe you've inherited a fortune, birthed quintuplets, been recently divorced, or you simply woke up in a cold sweat at 3am knowing — *knowing* — that the Elder Bankers of the Universe are slowly draining your essential fluids through the bank app on your phone.
 
-•  SubGenius Finance : https://SubGenius.Finance 
-Where Sub-Culture becomes Capital
+Whatever your problem is, **(BOB) can help you.**
 
-Eternal Salvation or Triple your Money Back!!
+The Conspiracy wants you mediocre, taxable, and on autopay. (BOB) wants you free. **Choose.**
 
-------------------
-What is Dobbscoin?
-------------------
-Dobbscoin is an excremental digital currency that enables the sending of
-instant Slack to anyone anywhere. Dobbscoin uses peer-to-peer technology
-to operate with no central authority: managing transactions and issuing
-Slack is carried out collectively by the network.
+---
 
-For more information, as well as an immediately useable binary version of
-the Dobbscoin Core software, see:
-https://github.com/SubGeniusFinance/dobbscoin-source/releases
+## ⚠ Upgrade notice — two hard forks incoming
 
+| Activation | Block | ETA | Old node fate |
+|---|---|---|---|
+| **LWMA-3 + emergency-diff + 100-block finality** | **1,888,808 → 1,888,888** | ~2026-07-16 | Forked off |
+| **AuxPoW merge-mining** (chain ID `0x00B0`) | **2,000,000** | ~2026-12-17 | Forked off |
 
-Building Dobbscoin on Linux
----------------------------
-Dobbscoin can be built on modern Linux distributions such as Ubuntu 22/24
-and Debian using standard system libraries.
+**Run v0.13.0.** Anything older gets left behind on a dead chain. The Pinkboys can keep it.
 
-Most users can build Dobbscoin with the following commands:
+---
 
-    git clone https://github.com/SubGeniusFinance/dobbscoin-source.git
-    cd dobbscoin-source
+## Contents
+- [What is (BOB)?](#what-is-bob)
+- [Quick start](#quick-start)
+- [Building from source](#building-from-source-linux)
+- [Wallet builds — Berkeley DB 4.8](#wallet-builds--berkeley-db-48)
+- [Network parameters](#network-parameters)
+- [Ecosystem](#ecosystem)
+- [Contributing](#contributing)
+- [Testing](#testing)
+- [License](#license)
 
-    ./autogen.sh
-    ./configure
-    make
+---
 
-After building, verify the version:
+## What is (BOB)?
 
-    ./src/dobbscoind --version
+(BOB) is an excremental digital currency that sends **instant Slack** to anyone, anywhere. No central authority. No board of directors. No quarterly earnings call. Just a peer-to-peer network of weirdos, mystics, miners, and tipbot enjoyers issuing Slack collectively, on a 2-minute heartbeat, since January 2014.
 
-NOTE:
-Compatible Wallet Builds (Berkeley DB 4.8)
-------------------------------------------
-You may see the following message when building Dobbscoin:
+It is **scrypt** under the hood, **flat 1.5 (BOB) per block forever**, and **NOT for Sale**. You earn it, mine it, or get tipped it. You do not buy it. *(NOT FINANCIAL ADVISORS. NOT FINANCIAL ADVICE.)*
 
-    Found Berkeley DB other than 4.8, required for portable wallets
+Pre-built binaries for Linux (daemon, Qt5, AppImage) and Windows 64-bit live on the releases page:
 
-This is not an error and not a bug in Dobbscoin.
+→ **<https://github.com/SubGeniusFinance/dobbscoin-source/releases>**
 
-It is a long-standing compatibility requirement shared across many
-Bitcoin-family cryptocurrencies, including historical versions of
-Bitcoin itself. Modern versions of Bitcoin Core do not use Berkeley
-DB at all for the wallet. That change happened in Bitcoin Core
-0.17–0.21 era, when the wallet backend was redesigned and later
-migrated to SQLite by default.
+---
 
-So today:
-Bitcoin Core 25.x / 26.x / 27.x
-Wallet storage: SQLite
-Berkeley DB: legacy only
+## Quick start
 
-Why does this exist?
---------------------
-Early versions of Bitcoin standardized on Berkeley DB version 4.8
-for wallet storage. Over time, newer versions of Berkeley DB changed
-internal behavior. To ensure that wallet files remain portable and
-compatible across different systems and builds, many projects continue
-to use Berkeley DB 4.8 for production and release builds.
+```bash
+git clone https://github.com/SubGeniusFinance/dobbscoin-source.git
+cd dobbscoin-source
+./contrib/install-db4.sh                       # builds BDB 4.8 into $HOME/db4 (no root)
+./autogen.sh
+./configure --with-bdb=$HOME/db4
+make -j$(nproc)
+./src/dobbscoind --version                     # should say 0.13.0
+```
 
-Because modern operating systems ship newer Berkeley DB versions,
-developers often install a local compatible copy specifically for
-building wallet software.
+That's it. You now have a working (BOB) node and wallet. Praise "Bob".
 
-This is normal across the cryptocurrency ecosystem.
+---
 
-Do I need Berkeley DB 4.8?
---------------------------
-Most users do NOT need to worry about this.
-Use the standard build unless you are:
+## Building from source (Linux)
 
-- Building official release binaries
-- Running production infrastructure
-- Operating an exchange or custodial service
-- Maintaining long-term wallet compatibility
-- Learning how cryptocurrency build systems work
+Tested on Ubuntu 22.04 / 24.04 and recent Debian. Install build deps:
 
-If you are simply running a node, experimenting, or developing,
-the default build is usually sufficient.
+```bash
+sudo apt install build-essential libssl-dev libboost-all-dev libevent-dev \
+                 libqt5gui5 libqt5core5a libqt5dbus5 qttools5-dev-tools \
+                 libprotobuf-dev protobuf-compiler libqrencode-dev
+```
 
----------------------------------------------------------------
-Installing the Compatible Library (Recommended for Maintainers)
----------------------------------------------------------------
-Dobbscoin provides a helper script that automatically installs the
-required Berkeley DB 4.8 libraries safely into your home directory.
+Then run the [Quick start](#quick-start) block above.
 
-This does NOT modify your operating system or replace system libraries.
+For Windows, macOS, and cross-compile, see [`doc/build-*.md`](doc/).
 
-Run:
+---
 
-    ./contrib/install-db4.sh
+## Wallet builds — Berkeley DB 4.8
 
-The script will:
+If `configure` says:
 
-- Download Berkeley DB 4.8 source code
-- Build the required libraries
-- Install them locally into:
+> `Found Berkeley DB other than 4.8, required for portable wallets`
 
-        $HOME/db4
+…**this is not a bug.** (BOB) inherits the Bitcoin Core 0.10 wallet format, which requires **Berkeley DB 4.8.30** for `wallet.dat` portability. Modern distros ship 5.x / 6.x, which cannot open the legacy format. Every serious Bitcoin-family fork still does this.
 
-No administrative privileges are required.
+The helper script installs a local copy into `$HOME/db4` — no root, no system-library tampering:
 
-----------------------------------------------
-Building Dobbscoin with Compatible Berkeley DB
-----------------------------------------------
+```bash
+./contrib/install-db4.sh
+./configure --with-bdb=$HOME/db4
+make -j$(nproc)
+```
 
-After installing the compatible library, build Dobbscoin using:
+Skip BDB only if you are running a **node-only** install with no wallet. If you need to hold or move (BOB), you need 4.8. End of debate.
 
-    ./autogen.sh
-    ./configure --with-bdb=$HOME/db4
-    make
+---
 
----------------------------
-Standard Build (Most Users)
----------------------------
-If you do not need strict wallet portability, you can simply build
-Dobbscoin using your system libraries:
+## Network parameters
 
-    ./autogen.sh
-    ./configure
-    make
+| Parameter | Value |
+|---|---|
+| Proof of work | **scrypt** |
+| Block target | **2 minutes** (since block 68425) |
+| Difficulty algorithm | DigiShield V4 → **LWMA-3** at block 1,888,808 → **emergency-diff** at 1,888,888 |
+| Max reorg depth | none → **100 blocks** at activation |
+| Merge mining | **AuxPoW**, chain ID **`0x00B0`**, at block 2,000,000 |
+| Subsidy | **1.5 (BOB) per block, forever** (since block 951753) |
+| Halvings | Capped at block 951752 — chain is mildly inflationary by design |
+| Tx version | v1 only |
+| Genesis | January 2014 (Bitcoin Core 0.10-era fork) |
 
+> There is **no 21M supply cap.** That was 2014 marketing. The `MAX_MONEY` sanity ceiling sits at 10B (BOB) — at the current emission rate, ~25,000 years away. The chain is intentionally, gently inflationary. **Slack is not scarce.**
 
-Summary
--------
-Seeing a Berkeley DB 4.8 message is normal in the cryptocurrency world.
+---
 
-Dobbscoin includes an installer script to make the process simple,
-safe, and reproducible.
+## Ecosystem
 
-Nothing is broken — this is just part of how many cryptocurrency
-wallet systems maintain compatibility over time.
+| | |
+|---|---|
+| **Block explorer** | <https://explorer.dobbscoin.info> |
+| **Mining pool** | <https://pool.dobbscoin.info> |
+| **Faucet** | <https://faucet.dobbscoin.info> |
+| **Rich list** | <https://explorer.dobbscoin.info/richlist> |
+| **"Bob" Bank** — custodial web wallet | <https://subgenius.finance/bobbank> |
+| **Android APK** | <https://subgenius.vip/dobbscoin.apk> |
+| **Bridge → wBOB on Gnosis** | <https://bridge.subgenius.finance> |
+| **wBOB trading** (primary, Oku) | [oku.trade — wBOB pair](https://oku.trade/swap?inputChain=gnosis&inToken=0x13550ae65f22A36f60A50d625B70b58666488263&outToken=0xe91d153e0b41518a2ce8dd3d7944fa863463a97d) |
+| **Forum** | <https://subgenius.finance/smf/> |
 
-License
--------
-Dobbscoin Core is released under the terms of the MIT license.
-See COPYING for more information or see:
-http://opensource.org/licenses/MIT.
+> **(BOB) is NOT for Sale.** Never has been, never will be. You acquire it, you earn it, you mine it, you get tipped it. The Conspiracy can keep its order book.
 
+---
 
-Development process
--------------------
-Developers work in their own trees, then submit pull requests when they think
-their feature or bug fix is ready. If it is a simple/trivial/non-controversial
-change, then one of the Dobbscoin development team members simply pulls it.
-If it is a more complicated or potentially controversial change, then the patch
-submitter will be asked to start a discussion (if they haven't already) on the
-FORUMS:
+## Contributing
 
-https://subgenius.finance/smf/
+This is an open project. Patches welcome.
 
+- **Trivial / uncontroversial** — open a PR, it gets pulled.
+- **Anything that touches consensus, the wallet, or user-facing behavior** — open a thread on the [forum](https://subgenius.finance/smf/) first. Hard forks are not surprise parties.
+- Match the style in [`doc/coding.md`](doc/coding.md). Don't reformat the world.
 
-The patch will be accepted if there is broad consensus that it is a good thing.
-Developers should expect to rework and resubmit patches if the code doesn't
-match the project's coding conventions (see doc/coding.md) or are controversial.
+`master` is built and tested but not guaranteed stable. **Tags are the stable line** — currently `v0.13.0`.
 
+---
 
-The `master` branch is regularly built and tested, but is not guaranteed to be
-completely stable. Tags are created regularly to indicate new official,
-stable release versions of Dobbscoin.
+## Testing
 
+Build and run the unit tests:
 
-Testing
--------
-Testing and code review is the bottleneck for development; we get more pull
-requests than we can review and test on short notice. Please be patient and
-help out by testing other people's pull requests, and remember this is a
-security-critical project where any mistake might cost people lots of time.
+```bash
+make check
+```
 
+Every PR is built via GitHub Actions — see [`.github/workflows/release.yml`](.github/workflows/release.yml).
 
-Automated Testing
------------------
-Developers are strongly encouraged to write unit tests for new code, and to
-submit new unit tests for old code. Unit tests can be compiled and run
-(assuming they weren't disabled in configure) with:
+Large changes need a test plan and need to be tested by **someone other than the author.** "It works on my machine" is how chains die.
 
-    make check
+---
 
-Every pull request is built for both Windows and Linux on a dedicated server,
-and unit and sanity tests are automatically run.
+## License
 
-See:
+MIT. See [`COPYING`](COPYING) or <https://opensource.org/licenses/MIT>.
 
-https://github.com/TheBlueMatt/test-scripts
-for the build/test scripts.
+---
 
-
-Manual Quality Assurance (QA) Testing
--------------------------------------
-Large changes should have a test plan, and should be tested by somebody other
-than the developer who wrote the code.
+<p align="center"><em><strong>Praise "Bob". GET SLACK. The Devival is forever.</strong></em></p>
