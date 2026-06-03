@@ -107,8 +107,54 @@ jobs:
           # has 62 pre-existing failures in transaction_tests/tx_valid since
           # v0.12.0 (script-flag mismatch with bundled tx_valid.json — chain
           # has shipped this way for years). See memory tx-valid-baseline.
+          # wallet_tests + crypto_tests added 2026-06-03 after a CCryptoKeyStore
+          # regression shipped in v0.10.3..v0.13.1 went undetected for a quarter.
           ./src/test/test_dobbscoin \
-            --run_test=emergency_diff_tests,lwma3_tests,auxpow_tests,checkblock_tests,pow_tests,miner_tests,DoS_tests
+            --run_test=emergency_diff_tests,lwma3_tests,auxpow_tests,checkblock_tests,pow_tests,miner_tests,DoS_tests,wallet_tests,crypto_tests
+
+      - name: Encrypt-wallet round-trip smoke test
+        run: |
+          # Catches the 8f34d639 class of regression: encryptwallet must persist
+          # encrypted keys to BDB AND the resulting wallet.dat must unlock with
+          # the same passphrase after a clean restart.
+          set -euo pipefail
+          DD="$RUNNER_TEMP/encrypt-roundtrip"
+          mkdir -p "$DD"
+          cat > "$DD/dobbscoin.conf" <<EOF
+          regtest=1
+          server=1
+          rpcuser=u
+          rpcpassword=p
+          rpcport=18555
+          listen=0
+          discover=0
+          upnp=0
+          EOF
+          ./src/dobbscoind -datadir="$DD" -daemon
+          sleep 4
+          ./src/dobbscoin-cli -datadir="$DD" -rpcport=18555 getinfo > /dev/null
+          ./src/dobbscoin-cli -datadir="$DD" -rpcport=18555 encryptwallet "ci-smoke-pass" \
+            | grep -q "wallet encrypted" || { echo "FAIL: encryptwallet did not return success message"; exit 1; }
+          sleep 6
+          # On-disk shape: must have ckey records and zero leaked cleartext key records
+          DB_DUMP="$PWD/db4/bin/db_dump"
+          CKEY=$("$DB_DUMP" -p "$DD/regtest/wallet.dat" | grep -oE '^ \\0[0-9a-f]ckey' | wc -l)
+          KEY=$("$DB_DUMP" -p "$DD/regtest/wallet.dat" | grep -oE '^ \\0[0-9a-f]key$' | wc -l)
+          MKEY=$("$DB_DUMP" -p "$DD/regtest/wallet.dat" | grep -oE '^ \\0[0-9a-f]mkey' | wc -l)
+          echo "post-encrypt wallet.dat: ckey=$CKEY key=$KEY mkey=$MKEY"
+          test "$CKEY" -gt 0 || { echo "FAIL: no ckey records"; exit 1; }
+          test "$KEY" -eq 0 || { echo "FAIL: $KEY leaked cleartext key records"; exit 1; }
+          test "$MKEY" -gt 0 || { echo "FAIL: no mkey record"; exit 1; }
+          # Restart and verify unlock works
+          ./src/dobbscoind -datadir="$DD" -daemon
+          sleep 4
+          ./src/dobbscoin-cli -datadir="$DD" -rpcport=18555 walletpassphrase "ci-smoke-pass" 30 \
+            || { echo "FAIL: walletpassphrase rejected the correct passphrase"; exit 1; }
+          UNLOCKED=$(./src/dobbscoin-cli -datadir="$DD" -rpcport=18555 getinfo \
+            | awk -F'[ ,]+' '/unlocked_until/{print $4}')
+          test "${UNLOCKED:-0}" -gt 0 || { echo "FAIL: unlocked_until not set"; exit 1; }
+          ./src/dobbscoin-cli -datadir="$DD" -rpcport=18555 stop
+          echo "encrypt-roundtrip OK"
 
       - name: Package — daemon-only tarball
         run: |
