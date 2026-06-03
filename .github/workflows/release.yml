@@ -68,7 +68,11 @@ jobs:
         uses: actions/cache@v4
         with:
           path: db4
-          key: bdb-4.8.30.NC-ubuntu-22.04-v1
+          # v2: v0.13.2 added an encrypt-wallet smoke step that shells out to
+          # db4/bin/db_dump. The v1 cache from earlier runs only preserved
+          # lib/ and include/ (utilities weren't being installed). Bumping
+          # forces a full rebuild that captures bin/ too.
+          key: bdb-4.8.30.NC-ubuntu-22.04-v2
 
       - name: Build BDB 4.8 (if cache miss)
         if: steps.cache-bdb.outputs.cache-hit != 'true'
@@ -117,7 +121,14 @@ jobs:
           # Catches the 8f34d639 class of regression: encryptwallet must persist
           # encrypted keys to BDB AND the resulting wallet.dat must unlock with
           # the same passphrase after a clean restart.
-          set -euo pipefail
+          set -euxo pipefail
+          DB_DUMP="$PWD/db4/bin/db_dump"
+          if [ ! -x "$DB_DUMP" ]; then
+            echo "FAIL: $DB_DUMP missing; the BDB cache is stale (no utilities). Bump the cache key."
+            ls -la "$PWD/db4" || true
+            ls -la "$PWD/db4/bin" 2>/dev/null || true
+            exit 1
+          fi
           DD="$RUNNER_TEMP/encrypt-roundtrip"
           mkdir -p "$DD"
           cat > "$DD/dobbscoin.conf" <<EOF
@@ -137,10 +148,12 @@ jobs:
             | grep -q "wallet encrypted" || { echo "FAIL: encryptwallet did not return success message"; exit 1; }
           sleep 6
           # On-disk shape: must have ckey records and zero leaked cleartext key records
-          DB_DUMP="$PWD/db4/bin/db_dump"
-          CKEY=$("$DB_DUMP" -p "$DD/regtest/wallet.dat" | grep -oE '^ \\0[0-9a-f]ckey' | wc -l)
-          KEY=$("$DB_DUMP" -p "$DD/regtest/wallet.dat" | grep -oE '^ \\0[0-9a-f]key$' | wc -l)
-          MKEY=$("$DB_DUMP" -p "$DD/regtest/wallet.dat" | grep -oE '^ \\0[0-9a-f]mkey' | wc -l)
+          # grep can return 1 on zero matches under set -e; pipe through wc to
+          # normalize to a count. Pipefail won't fire because grep returns 0 OR 1
+          # (both "expected" outcomes here) and wc always returns 0.
+          CKEY=$("$DB_DUMP" -p "$DD/regtest/wallet.dat" | { grep -E '^ \\0[0-9a-f]ckey' || true; } | wc -l)
+          KEY=$("$DB_DUMP" -p "$DD/regtest/wallet.dat" | { grep -E '^ \\0[0-9a-f]key$' || true; } | wc -l)
+          MKEY=$("$DB_DUMP" -p "$DD/regtest/wallet.dat" | { grep -E '^ \\0[0-9a-f]mkey' || true; } | wc -l)
           echo "post-encrypt wallet.dat: ckey=$CKEY key=$KEY mkey=$MKEY"
           test "$CKEY" -gt 0 || { echo "FAIL: no ckey records"; exit 1; }
           test "$KEY" -eq 0 || { echo "FAIL: $KEY leaked cleartext key records"; exit 1; }
