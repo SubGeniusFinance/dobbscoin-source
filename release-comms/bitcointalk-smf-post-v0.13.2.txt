@@ -1,0 +1,79 @@
+[size=14pt][b]🚨 PRAISE "BOB" — MANDATORY UPGRADE — Dobbscoin (BOB) v0.13.2 — Wallet-Encryption Hotfix — Ship Immediately[/b][/size]
+
+The Conspiracy can ride a typo for a quarter and you'd never know unless someone tried to lock their wallet.
+
+A community member — credit and gratitude to [b]Eyemaginative[/b], whose stubbornness about "no, it really isn't my brain" is exactly the Slack-protective instinct (BOB) was designed to reward — discovered that the v0.13.0 wallet refused his passphrase. The v0.10.2 wallet on the same [tt]wallet.dat[/tt] unlocked it just fine. He tested it back-to-back. He was right. The code was wrong.
+
+We chased it. The damage is worse than the symptom.
+
+[size=12pt][b]What's Actually Broken[/b][/size]
+
+Every (BOB) Linux source release from [b]v0.10.3 onward[/b] — that is [b]v0.10.3, v0.10.4, v0.11.0, v0.12.0, v0.13.0, v0.13.1[/b] — shipped with a regression in [tt]src/crypter.cpp[/tt]'s [tt]CCryptoKeyStore[/tt] block. A March 2026 "modernization" commit rewrote the block during the OpenSSL 1 → 3 cleanup and introduced two distinct breakages that share one root cause:
+
+[list]
+[li][b]Symptom A — [tt]encryptwallet[/tt] silently leaves your keys cleartext on disk.[/b] The call appears to succeed in memory. The daemon then crashes via [tt]assert(false)[/tt] before persisting anything. The wallet.dat on disk still holds your private keys [b]unencrypted[/b], while the GUI/CLI thinks you're locked. [b]If you ran [tt]encryptwallet[/tt] under any post-2026-03-25 (BOB) source build, your keys are exposed on the filesystem regardless of what the wallet says about its "encrypted" state.[/b][/li]
+[li][b]Symptom B — pre-encrypted wallets refuse the correct passphrase.[/b] Eyemaginative's exact case. The Unlock code path lost the line that says "this passphrase worked", so it never says yes. Any non-empty crypted-keys map returns "passphrase incorrect" regardless of what you type. v0.10.2 binaries unlock the same [tt]wallet.dat[/tt] without issue, which is why the bug went undetected until someone owned wallets across both eras.[/li]
+[/list]
+
+Both symptoms come from one commit. Both are fixed by reverting the [tt]CCryptoKeyStore[/tt] block to its 2014-vintage Bitcoin Core 0.10 baseline. The fix shipped in v0.13.2 is a strict revert — no new logic, no new abstractions, just the consensus-of-history form that worked everywhere except this fork between March 2026 and today.
+
+[size=12pt][b]What To Do Right Now[/b][/size]
+
+[b]If you ran [tt]encryptwallet[/tt] under v0.10.3 or later (Linux source builds):[/b]
+
+[list]
+[li]Assume your [tt]wallet.dat[/tt] contains [b]plaintext private keys[/b], regardless of what the GUI says about encryption state.[/li]
+[li]Treat the wallet file like an unencrypted seed. [b]Do not share, do not commit, do not back up to anything you wouldn't store a paper key on.[/b][/li]
+[li]Once v0.13.2 is running, [tt]encryptwallet[/tt] will work for real. [b]But your existing keys may already have been observed by whatever else has read your home directory.[/b] The safest move is to generate fresh addresses on v0.13.2, [tt]getnewaddress[/tt], and migrate balances to addresses whose private keys [b]never[/b] existed in plaintext on the old [tt]wallet.dat[/tt]. Pinkboys with backup access have had three months to peek.[/li]
+[/list]
+
+[b]If your wallet won't unlock under v0.13.0 / v0.13.1 (Eyemaginative's case):[/b]
+
+[list]
+[li]Your passphrase is fine. The code was wrong.[/li]
+[li]Drop back to v0.10.2 binaries to unlock and [tt]dumpwallet[/tt] / [tt]dumpprivkey[/tt] as needed, or just wait for v0.13.2 binaries to land — they unlock your existing wallet.dat correctly.[/li]
+[li]Nothing has been written to disk in a damaging way from the failed unlock attempts. Your [tt]wallet.dat[/tt] is intact.[/li]
+[/list]
+
+[b]If you've been running v0.13.0 / v0.13.1 with an [i]already[/i]-encrypted wallet (encrypted before March 2026):[/b]
+
+[list]
+[li]You almost certainly haven't tripped Symptom A, since the wallet was already encrypted before the broken code ever touched it.[/li]
+[li]You may have tripped Symptom B if you ever tried to unlock. The failed unlock is non-destructive. Just upgrade.[/li]
+[/list]
+
+[size=12pt][b]Why CI Didn't Catch It[/b][/size]
+
+The release workflow gated only consensus-fork test suites — emergency-diff, LWMA-3, AuxPoW, DoS, miner, checkblock, pow. The wallet and crypto Boost suites have always existed in the source tree and they would have failed loudly on this regression, but they weren't in the release gate. The trim that left only consensus suites was made because the bundled [tt]tx_valid.json[/tt] has 62 pre-existing failures inherited from a 2018-era script-flag mismatch — and trimming the gate was the cheapest way to get green CI. We trimmed too far. v0.13.2's [tt].github/workflows/release.yml[/tt] adds [tt]wallet_tests,crypto_tests[/tt] back to the gate, plus a new end-to-end smoke step that: encrypts a wallet, restarts the daemon, [tt]db_dump[/tt]'s the [tt]wallet.dat[/tt], and verifies the on-disk record types are correct (ckey present, mkey present, plaintext key records absent) [b]and[/b] that [tt]walletpassphrase[/tt] succeeds with the right passphrase after restart. The same smoke step rejects wrong passphrases. If any of those fail, the release job fails — no orphan binaries get uploaded.
+
+[size=12pt][b]What's Still True[/b][/size]
+
+[list]
+[li][b]Consensus is unaffected.[/b] None of the (BOB) consensus rules — scrypt PoW, 2-minute blocks, KGW/DigiShield/LWMA-3 retarget, flat 1.5 (BOB)/block subsidy, AuxPoW chain ID 0x00B0, emergency-difficulty recovery — go anywhere near [tt]CCryptoKeyStore[/tt]. The chain is fine. Blocks are fine. Your balance on-chain is fine. The bug was purely on the wallet-encryption side of the daemon and never touched a block.[/li]
+[li][b]The three 2026 forks still activate as scheduled.[/b] LWMA-3 + 100-block max-reorg at block 1,888,808 (~July 16, ~04:19 UTC). Emergency-difficulty recovery at block 1,888,888 (~July 16, ~07:00 UTC). AuxPoW at block 2,000,000 (~December 17, 2026). v0.13.2 is v0.13.0 with the crypter fix — same fork heights, same chain-ID, same consensus.[/li]
+[li][b]Win64 binaries from the GitHub releases page may be unaffected,[/b] because Win64 builds via [tt]depends/[/tt] which pins OpenSSL 1.0.1k — same C++ source, same regression, but the test of "did the bug fire on your platform" is empirical. The Linux tarball / AppImage / source builds [b]are[/b] confirmed affected. Upgrade either way; v0.13.2 is a strict superset of v0.13.0/v0.13.1 on every platform.[/li]
+[/list]
+
+[size=12pt][b]Binaries[/b][/size]
+
+GitHub release: [tt]https://github.com/SubGeniusFinance/dobbscoin-source/releases/tag/v0.13.2[/tt]
+
+Same artifact set as v0.13.0/v0.13.1:
+
+[list]
+[li]Linux daemon-only tarball[/li]
+[li]Linux Qt5 dynamic tarball[/li]
+[li]Linux Qt5 AppImage (self-contained)[/li]
+[li]Win64 zip (Qt 5.7.1 static)[/li]
+[li][tt]SHA256SUMS.txt[/tt][/li]
+[/list]
+
+Reproducible from the [tt]v0.13.2[/tt] git tag on [tt]ubuntu-22.04[/tt] runners. Workflow at [tt].github/workflows/release.yml[/tt]. The smoke step now runs against every release tag; you can re-run it locally with [tt]act[/tt] or read the YAML directly.
+
+[size=12pt][b]Backed By Nothing, Powered By Everything[/b][/size]
+
+The (BOB) lathe ran for a quarter with a Pinkboy-shaped chip in the bearings. One Earthling — Eyemaginative — heard the tone change and refused to ignore it. The Conspiracy [i]wants[/i] you to second-guess yourself when the code lies to you. Don't.
+
+[b]Praise "Bob". Verify your records. Upgrade.[/b]
+
+[b][i]NOT FINANCIAL ADVISORS. NOT FINANCIAL ADVICE. (BOB) IS NOT FOR SALE.[/i][/b]
