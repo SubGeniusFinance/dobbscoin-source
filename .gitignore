@@ -144,3 +144,7 @@ ccache
 configure~
 depends/x86_64-w64-mingw32/
 build-windows-autonomous.log
+
+# Release artifacts (live on GitHub Releases, not in git)
+/release/
+depends/patches/qt.bak-*/
